@@ -6,9 +6,9 @@ import mtspy_cpp
 def mat_vec(A, b):
     rows, cols = A.shape
     nnz = A.nnz
-    x = mtspy_cpp.mat_vec(rows, cols, nnz,
-                          A.data, A.indptr,
-                          A.indices, b)
+    x = mtspy_cpp.mat_vec_d(rows, cols, nnz,
+                            A.data, A.indptr,
+                            A.indices, b)
     return x
 
 
