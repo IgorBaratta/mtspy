@@ -12,8 +12,8 @@ jobs:
       - name: Setup file system permissions
         run: chmod -R 777 $GITHUB_WORKSPACE /github /__w/_temp
       - uses: actions/checkout@v2
-      - name: Checkout submodules
-        run: git submodule update --recursive --remote
+        with:
+          submodules: recursive         
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
