@@ -1,15 +1,15 @@
 # mtspy
 
-Multi-threading sparse matrix operations sparse matrices in Python
+Multi-threaded sparse matrix operations in Python
 
 ## Requirements
 
-Make sure to clone with --recursive to download the required submodules!
+Make sure to clone with **--recursive** to download the required submodules!
 
-- C++17
+- C++ 14 compiler (or later) 
 - OpenMP
-- EIGEN3
-- PYBIND11
+- Eigen3
+- pybind11
 
 ## License
 
