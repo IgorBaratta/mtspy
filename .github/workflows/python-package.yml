@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     container: igorbaratta/mtspy
     steps:
+      - name: Checkout submodules
+        uses: srt32/git-actions@v0.0.3
+        with:
+          key: git submodule update --init --recursive
       - name: Setup file system permissions
         run: chmod -R 777 $GITHUB_WORKSPACE /github /__w/_temp
       - uses: actions/checkout@v2
