@@ -3,9 +3,12 @@ from scipy import sparse
 from mtspy import thread_control, matvec
 import time
 
-N = 100
+N = 100000
 v0 = numpy.ones(N, dtype=numpy.float64)
-M = sparse.random(N, N, density=0.8, format="csr", dtype=numpy.float64)
+diags = numpy.arange(start = -300, stop=300)
+values = numpy.random.rand(diags.size)
+M = sparse.diags(values, diags, shape=(N,N), format='csr')
+# M = sparse.identity(N).tocsr()
 
 # Set maximum number of threads (tentative) to 4,
 # equivalent of setting OMP_NUM_THREADS
@@ -18,7 +21,7 @@ print("Elapsed time (s): ", t1 - t0)
 
 # Use only one thread locally if the function within the context
 # uses threads.
-with thread_control(1) as th:
+with thread_control(1, timer=True) as th:
     v1 = matvec(M, v0)
 
 # Use 4 threads locally if the function within the context
