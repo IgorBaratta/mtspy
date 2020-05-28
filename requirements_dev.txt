@@ -1,0 +1,3 @@
+# In requirements_dev.txt
+-r requirements.txt
+pytest>=5.1.3
