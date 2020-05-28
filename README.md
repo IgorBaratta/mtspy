@@ -1,5 +1,7 @@
 # mtspy
 
+![mtspy](https://github.com/IgorBaratta/mtspy/workflows/Python%20package/badge.svg)
+
 Multi-threaded sparse matrix operations in Python
 
 ## Requirements
