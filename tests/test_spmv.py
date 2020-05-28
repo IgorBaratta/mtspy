@@ -23,8 +23,8 @@ def mat_vec(A, b):
            A.indices, b)
     return x
 
-
-@pytest.mark.parametrize('dtype', [numpy.float32, numpy.float64, numpy.complex64, numpy.complex128])
+dtype_list = [numpy.float32, numpy.float64, numpy.complex64, numpy.complex128]
+@pytest.mark.parametrize('dtype', dtype_list)
 def test_spmv(dtype):
     N = 1000
     v0 = numpy.ones(N, dtype=dtype)
