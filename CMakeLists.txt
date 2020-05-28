@@ -10,7 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(OpenMP REQUIRED)
 find_package(Eigen3 3.3 REQUIRED)
 add_subdirectory(pybind11)
-pybind11_add_module(mtspy_cpp src/main.cpp)
+pybind11_add_module(mtspy_cpp cpp/main.cpp)
 
 target_include_directories(mtspy_cpp SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
 target_link_libraries(mtspy_cpp PUBLIC OpenMP::OpenMP_CXX)
