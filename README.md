@@ -4,7 +4,7 @@ Multi-threaded sparse matrix operations in Python
 
 ## Requirements
 
-**Make sure to clone with --recursive to download the required submodules!**
+Make sure to clone with **--recursive** to download the required submodules!
 
 - C++17
 - OpenMP
