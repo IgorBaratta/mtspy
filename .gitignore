@@ -3,6 +3,7 @@ dist/
 _build/
 _generate/
 .vscode/
+.pytest_cache/
 *.so
 *.py[cod]
 *.egg-info
