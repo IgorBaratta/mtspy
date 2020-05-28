@@ -2,8 +2,7 @@ FROM ubuntu:latest as base
 
 WORKDIR /tmp
 
-RUN export DEBIAN_FRONTEND=noninteractive
-
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -qq update && \
     apt-get -y install \
     cmake \
@@ -20,3 +19,4 @@ RUN apt-get -qq update && \
     python3-setuptools && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
