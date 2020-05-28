@@ -1,5 +1,8 @@
 # mtspy
 
+![CI](https://github.com/IgorBaratta/mtspy/workflows/CI/badge.svg)
+![CI Docker images](https://img.shields.io/docker/cloud/build/igorbaratta/mtspy)
+
 Multi-threaded sparse matrix operations in Python
 
 ## Requirements
