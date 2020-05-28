@@ -6,9 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/third-party/pybind11")
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/third-party/eigen3")
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
+add_subdirectory("${PROJECT_SOURCE_DIR}/third-party/pybind11")
 
 # Check for required packages
 find_package(OpenMP REQUIRED)
