@@ -1,7 +1,7 @@
 import numpy
 from scipy import sparse
 import pytest
-import mtspy_cpp
+import mtspy
 
 
 def mat_vec(A, b):
@@ -10,13 +10,13 @@ def mat_vec(A, b):
     dtype = b.dtype
 
     if dtype == numpy.float64:
-        op = mtspy_cpp.mat_vec_d
+        op = mtspy.mat_vec_d
     elif dtype == numpy.float32:
-        op = mtspy_cpp.mat_vec_f
+        op = mtspy.mat_vec_f
     elif dtype == numpy.complex64:
-        op = mtspy_cpp.mat_vec_cf
+        op = mtspy.mat_vec_cf
     elif dtype == numpy.complex128:
-        op = mtspy_cpp.mat_vec_cd
+        op = mtspy.mat_vec_cd
 
     x = op(rows, cols, nnz,
            A.data, A.indptr,

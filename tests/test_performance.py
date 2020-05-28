@@ -2,6 +2,7 @@ import numpy
 from scipy import sparse
 import pytest
 import mtspy_cpp
+import time
 
 
 def mat_vec(A, b):
@@ -24,9 +25,18 @@ def mat_vec(A, b):
     return x
 
 
-N = 1000
+N = 10000
 v0 = numpy.ones(N, dtype=numpy.float64)
-M = sparse.random(N, N, density=0.1, format="csr", dtype=numpy.float64)
+M = sparse.random(N, N, density=0.8, format="csr", dtype=numpy.float64)
+
+t0 = time.perf_counter()
 v1 = mat_vec(M, v0)
+t1 = time.perf_counter()
+print(t1 - t0, "seconds")
+
+t0 = time.perf_counter()
 v2 = M@v0
+t1 = time.perf_counter()
+print(t1 - t0, "seconds")
+
 print(numpy.allclose(v1, v2))
