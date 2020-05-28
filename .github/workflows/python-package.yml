@@ -16,4 +16,8 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install flake8 pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Verify pep8, pyflakes and circular complexity
+        run: flake8 mtspy
+      - name: Install mtspy
+        run: python3 -m pip install -v .
     
