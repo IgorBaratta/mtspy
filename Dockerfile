@@ -16,7 +16,8 @@ RUN apt-get -qq update && \
     python3-numpy \
     python3-pip \
     python3-scipy \
-    python3-setuptools && \
+    python3-setuptools \
+    git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
