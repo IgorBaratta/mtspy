@@ -6,7 +6,7 @@ Multi-threaded sparse matrix operations in Python
 
 Make sure to clone with **--recursive** to download the required submodules!
 
-- C++17
+- C++ 14 compiler (or later) 
 - OpenMP
 - Eigen3
 - pybind11
