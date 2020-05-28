@@ -1,6 +1,6 @@
 # mtspy
 
-![mtspy](https://github.com/IgorBaratta/mtspy/workflows/Python%20package/badge.svg)
+![mtspy](https://github.com/IgorBaratta/mtspy/workflows/mtspy/badge.svg)
 
 Multi-threaded sparse matrix operations in Python
 
