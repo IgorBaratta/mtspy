@@ -14,6 +14,12 @@ Make sure to clone with **--recursive** to download the required submodules!
 - Eigen3
 - pybind11
 
+
+Using docker container:
+```
+docker pull igorbaratta/mtspy:latest
+```
+
 ## License
 
  **mtspy** is licensed under the GNU General Public License v3.0.

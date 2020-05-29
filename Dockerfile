@@ -10,6 +10,7 @@ RUN apt-get -qq update && \
     libomp-dev\
     libeigen3-dev \
     liblapack-dev \
+    libopenblas-dev\
     pkg-config \
     python3-dev \
     python3-matplotlib \
