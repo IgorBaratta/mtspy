@@ -4,10 +4,12 @@ import sys
 import platform
 import subprocess
 
-from setuptools import setup, Extension
+from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 if sys.version_info < (3, 7):
     print("Python 3.7 or higher required, please upgrade.")
@@ -57,8 +59,13 @@ setup(
     version='0.0.1',
     author='Igor Baratta',
     author_email='igorbaratta@gmail.com',
-    description='A test project using pybind11 and CMake',
+    description='Multi-threaded sparse matrix operations in Python',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/IgorBaratta/mtspy",
     ext_modules=[CMakeExtension('mtspy_cpp')],
     cmdclass=dict(build_ext=CMakeBuild),
+    packages=find_packages(),
+    python_requires='>=3.7',
     zip_safe=False,
 )

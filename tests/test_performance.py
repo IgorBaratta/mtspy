@@ -3,7 +3,7 @@ from scipy import sparse
 from mtspy import thread_control, matvec
 import time
 
-N = 100000
+N = 1000
 v0 = numpy.ones(N, dtype=numpy.float64)
 diags = numpy.arange(start = -300, stop=300)
 values = numpy.random.rand(diags.size)

@@ -5,18 +5,36 @@
 
 Multi-threaded sparse matrix operations in Python
 
-## Requirements
+## Installation
+
+Install with:
+
+```shell
+pip3 install git+https://github.com/IgorBaratta/mtspy.git --upgrade
+```
+
+or if the anot ll requirements are installed:
+
+```shell
+git clone --recursive https://github.com/IgorBaratta/mtspy.git
+cd mtspy
+python3 -m pip -r requirements.txt
+python3 -m pip install .
+```
+
+### Requirements
 
 Make sure to clone with **--recursive** to download the required submodules!
 
-- C++ 14 compiler (or later) 
-- OpenMP
+- Numpy
+- Scipy
+- C++ 17 compiler with OpenMP support
 - Eigen3
 - pybind11
 
+Using docker container with all requirements installed:
 
-Using docker container:
-```
+```shell
 docker pull igorbaratta/mtspy:latest
 ```
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(mtspy_cpp)
 
 # Set C++ standard
@@ -11,10 +11,19 @@ CHECK_CXX_COMPILER_FLAG("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
 if(COMPILER_SUPPORTS_MARCH_NATIVE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 endif()
-
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/mtspy/cpp/cmake/modules")
-add_subdirectory("${PROJECT_SOURCE_DIR}/third-party/pybind11")
-set(EIGEN3_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third-party/eigen")
+
+find_package(Python3 REQUIRED Interpreter Development)
+
+find_package(pybind11 CONFIG HINTS ${PYBIND11_DIR} ${PYBIND11_ROOT}
+  $ENV{PYBIND11_DIR} $ENV{PYBIND11_ROOT})
+if (NOT pybind11_FOUND)
+    add_subdirectory("${PROJECT_SOURCE_DIR}/third-party/pybind11")
+endif()
+
+if(NOT ENV{EIGEN3_INCLUDE_DIR})
+    set(EIGEN3_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third-party/eigen")
+endif()
 
 # Check for required packages
 find_package(OpenMP REQUIRED)
