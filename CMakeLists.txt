@@ -14,6 +14,7 @@ endif()
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/mtspy/cpp/cmake/modules")
 add_subdirectory("${PROJECT_SOURCE_DIR}/third-party/pybind11")
+set(EIGEN3_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third-party/eigen")
 
 # Check for required packages
 find_package(OpenMP REQUIRED)
