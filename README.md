@@ -18,7 +18,7 @@ or if the anot ll requirements are installed:
 ```shell
 git clone --recursive https://github.com/IgorBaratta/mtspy.git
 cd mtspy
-python3 -m pip -r requirements.txt
+python3 -m pip install -r  requirements.txt
 python3 -m pip install .
 ```
 
@@ -40,4 +40,4 @@ docker pull igorbaratta/mtspy:latest
 
 ## License
 
- **mtspy** is licensed under the GNU General Public License v3.0.
+ **mtspy** is licensed under the GNU General Public License v3.0 -- see the [LICENSE](LICENSE) file for details
