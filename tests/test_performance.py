@@ -3,12 +3,13 @@ from scipy import sparse
 from mtspy import thread_control, matvec
 import time
 
-N = 1000
+
+numpy.seterr(all='warn', over='raise')
+N = 100000
 v0 = numpy.ones(N, dtype=numpy.float64)
-diags = numpy.arange(start = -20, stop=20)
+diags = numpy.arange(start = -200, stop=200)
 values = numpy.random.rand(diags.size)
 M = sparse.diags(values, diags, shape=(N,N), format='csr')
-# M = sparse.identity(N).tocsr()
 
 # Set maximum number of threads (tentative) to 4,
 # equivalent of setting OMP_NUM_THREADS
