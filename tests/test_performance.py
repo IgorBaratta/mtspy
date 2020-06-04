@@ -5,7 +5,7 @@ import time
 
 N = 1000
 v0 = numpy.ones(N, dtype=numpy.float64)
-diags = numpy.arange(start = -300, stop=300)
+diags = numpy.arange(start = -20, stop=20)
 values = numpy.random.rand(diags.size)
 M = sparse.diags(values, diags, shape=(N,N), format='csr')
 # M = sparse.identity(N).tocsr()
