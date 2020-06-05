@@ -30,4 +30,6 @@ with thread_control(1, timer=True) as th:
 with thread_control(4, timer=True):
     v1 = matvec(M, v0)
 
+
+assert (numpy.allclose(v1-v2, 0))
 print(thread_control.get_max_threads())
