@@ -37,8 +37,7 @@ SpMM(I rows, I cols, I nnz,
      const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> &dense)
 {
     assert(cols == dense.rows());
-
-    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> out(cols, dense.cols());
+    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> out(rows, dense.cols());
     if (nnz > 0)
     {
 #pragma omp parallel for schedule(guided)
@@ -47,14 +46,9 @@ SpMM(I rows, I cols, I nnz,
             const int local_size = indptr[i + 1] - indptr[i];
             auto local_data = data.segment(indptr[i], local_size);
             auto local_cols = indices.segment(indptr[i], local_size);
-            for (I k = 0; k < dense.cols(); k++)
-            {
-                auto dense_data = dense(local_cols, k);
-                out(i, k) = local_data.transpose() * dense_data;
-            }
+            out(i, Eigen::all) = local_data.transpose() * dense(local_cols, Eigen::all);
         }
     }
-
     pybind11::gil_scoped_acquire acquire;
     return out;
 }
