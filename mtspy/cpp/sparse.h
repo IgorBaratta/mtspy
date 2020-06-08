@@ -6,10 +6,10 @@
 
 template <typename T, typename I>
 Eigen::Matrix<T, Eigen::Dynamic, 1>
-SpMV(int rows, int cols, int nnz,
-     Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> &data,
-     Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indptr,
-     Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indices,
+SpMV(I rows, I cols, I nnz,
+     const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> &data,
+     const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indptr,
+     const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indices,
      const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> b)
 {
     assert(cols == rows);
@@ -34,7 +34,7 @@ SpMM(I rows, I cols, I nnz,
      const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> &data,
      const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indptr,
      const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indices,
-     Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> &dense)
+     const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> &dense)
 {
     assert(cols == dense.rows());
 
@@ -62,9 +62,9 @@ SpMM(I rows, I cols, I nnz,
 template <typename T, typename I>
 Eigen::Matrix<T, Eigen::Dynamic, 1>
 SPMV_eigen(I rows, I cols, I nnz,
-           Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> &data,
-           Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indptr,
-           Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indices,
+           const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> &data,
+           const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indptr,
+           const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indices,
            const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> v1)
 {
     // Currently only work with row-major sparse matrix in parallel

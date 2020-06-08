@@ -40,8 +40,8 @@ def matvec(A: sparse.spmatrix, x: numpy.ndarray):
 
 def matmat(A: sparse.spmatrix, X: numpy.ndarray):
     """
-    Performs the operation Y = A * X,  where A is a (m, k) sparse matrix
-    and Xis a (k, n) dense matrix. 
+    Performs the operation C = A * B,  where A is a (m, k) sparse matrix
+    and B is a (k, n) dense matrix.
 
     To avoid copies it's recommended that A and X have the same dtype.
     """
@@ -54,8 +54,8 @@ def matmat(A: sparse.spmatrix, X: numpy.ndarray):
                           sparse.SparseEfficiencyWarning)
             A = sparse.csr_matrix(A)
 
-    # if x.shape != (n,) and x.shape != (n, 1):
-    #     raise ValueError('Dimension mismatch')
+    if X.shape[0] != n:
+        raise ValueError('Dimension mismatch')
 
     if A.dtype == X.dtype:
         dtype = A.dtype
@@ -68,8 +68,8 @@ def matmat(A: sparse.spmatrix, X: numpy.ndarray):
     # Convert to row-major (C-style) if it's not already.
     X = numpy.asanyarray(X, dtype=dtype, order='C')
 
-    y = cpp.spmm(m, n, A.nnz,
-                   A.data, A.indptr,
-                   A.indices, X)
+    Y = cpp.spmm(m, n, A.nnz,
+                 A.data, A.indptr,
+                 A.indices, X)
 
-    return y
+    return Y
