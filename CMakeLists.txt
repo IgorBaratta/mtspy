@@ -44,3 +44,14 @@ pybind11_add_module(mtspy_cpp mtspy/cpp/main.cpp)
 
 target_include_directories(mtspy_cpp SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
 target_link_libraries(mtspy_cpp PUBLIC OpenMP::OpenMP_CXX)
+
+# Find optional packages
+set(BLA_VENDOR Intel10_64lp_seq)
+find_package(LAPACK QUIET)
+if (LAPACK_FOUND)
+    include_directories(${BLAS_INCLUDE_DIRS})
+    add_definitions(-DEIGEN_USE_MKL_ALL)
+    add_definitions(-DMKL_ILP64 -m64 -I${MKLROOT}/include)
+    target_link_libraries(mtspy_cpp PUBLIC mkl_intel_ilp64 mkl_sequential mkl_core dl m)
+    message("-- Using MKL as dense operations backend")
+endif()
