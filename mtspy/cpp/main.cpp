@@ -1,8 +1,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/eigen.h>
 #include <complex>
-#include "sparse.h"
-#include "thread_control.h"
+#include "sparse.hpp"
+#include "thread_control.hpp"
 
 namespace py = pybind11;
 
