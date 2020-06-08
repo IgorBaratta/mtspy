@@ -26,11 +26,13 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/mtspy/cpp/cmake/modules")
 
 find_package(Python3 REQUIRED Interpreter Development)
 find_package(pybind11 CONFIG HINTS ${PYBIND11_DIR} ${PYBIND11_ROOT}
-  $ENV{PYBIND11_DIR} $ENV{PYBIND11_ROOT})
+  $ENV{PYBIND11_DIR} $ENV{PYBIND11_ROOT} QUIET)
 if (NOT pybind11_FOUND)
     add_subdirectory("${PROJECT_SOURCE_DIR}/third-party/pybind11")
+    set(pybind11_FOUND)
 endif()
 
+# Try to check if user provided EIGEN3_INCLUDE_DIR
 if(NOT ENV{EIGEN3_INCLUDE_DIR})
     set(EIGEN3_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third-party/eigen")
 endif()

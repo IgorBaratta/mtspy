@@ -23,31 +23,53 @@ def matvec(A: sparse.spmatrix, x: numpy.ndarray):
     if x.shape != (n,) and x.shape != (n, 1):
         raise ValueError('Dimension mismatch')
 
-    if A.dtype == x.dtype:
+    if numpy.iscomplexobj(x) and not numpy.iscomplexobj(A):
+        A = A.astype(x.dtype)
+        warnings.warn("Converting sparse matrix to complex",
+                      sparse.SparseEfficiencyWarning)
+
+    # Convert to row-major (C-style) if it's not already.
+    x = numpy.asanyarray(x, dtype=A.dtype, order='C')
+
+    y = cpp.spmv(m, n, A.nnz,
+                 A.data, A.indptr,
+                 A.indices, x)
+
+    return y
+
+
+def matmat(A: sparse.spmatrix, X: numpy.ndarray):
+    """
+    Performs the operation Y = A * X,  where A is a (m, k) sparse matrix
+    and Xis a (k, n) dense matrix. 
+
+    To avoid copies it's recommended that A and X have the same dtype.
+    """
+
+    m, n = A.shape
+
+    if sparse.issparse(A):
+        if not isinstance(A, sparse.csr_matrix):
+            warnings.warn("Converting sparse matrix to CSR",
+                          sparse.SparseEfficiencyWarning)
+            A = sparse.csr_matrix(A)
+
+    # if x.shape != (n,) and x.shape != (n, 1):
+    #     raise ValueError('Dimension mismatch')
+
+    if A.dtype == X.dtype:
         dtype = A.dtype
-    elif numpy.iscomplexobj(x) and not numpy.iscomplexobj(A):
-        dtype = x.dtype
+    elif numpy.iscomplexobj(X) and not numpy.iscomplexobj(A):
+        dtype = X.dtype
         A = A.astype(dtype)
         warnings.warn("Converting sparse matrix to complex",
                       sparse.SparseEfficiencyWarning)
 
-    # Convert to row-major (C-style) if not already.
-    x = numpy.asanyarray(x, dtype=dtype, order='C')
+    # Convert to row-major (C-style) if it's not already.
+    X = numpy.asanyarray(X, dtype=dtype, order='C')
 
-    if dtype == numpy.float64:
-        spmv = cpp.mat_vec_d
-    elif dtype == numpy.float32:
-        spmv = cpp.mat_vec_f
-    elif dtype == numpy.complex64:
-        spmv = cpp.mat_vec_cf
-    elif dtype == numpy.complex128:
-        spmv = cpp.mat_vec_cd
-    else:
-        raise NotImplementedError
-
-    nnz = A.nnz
-    y = spmv(m, n, nnz,
-             A.data, A.indptr,
-             A.indices, x)
+    y = cpp.spmm(m, n, A.nnz,
+                   A.data, A.indptr,
+                   A.indices, X)
 
     return y
