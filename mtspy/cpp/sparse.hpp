@@ -1,71 +1,116 @@
 #include <iostream>
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-#include <omp.h>
 
-template <typename T, typename I>
-Eigen::Matrix<T, Eigen::Dynamic, 1>
-SpMV(I rows, I cols, I nnz,
-     const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> &data,
-     const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indptr,
-     const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indices,
-     const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> b)
+namespace py = pybind11;
+
+template <class T>
+using array_t = py::array_t<T, py::array::c_style | py::array::forcecast>;
+
+template <typename ScalarType, typename IndType>
+array_t<ScalarType>
+matvec(IndType rows, IndType cols, IndType nnz,
+       const array_t<ScalarType> &data,
+       const array_t<IndType> &displ,
+       const array_t<IndType> &indices,
+       const array_t<ScalarType> &vec)
 {
-    assert(cols == rows);
-    Eigen::Matrix<T, Eigen::Dynamic, 1> out(rows);
-    if (nnz > 0)
-#pragma omp parallel for schedule(guided)
-        for (int i = 0; i < rows; ++i)
-        {
-            const int local_size = indptr[i + 1] - indptr[i];
-            auto local_data = data.segment(indptr[i], local_size);
-            auto local_cols = indices.segment(indptr[i], local_size);
-            out[i] = local_data.transpose() * b(local_cols);
-        }
+    // get pointers to data
+    const ScalarType *data_ptr = data.data();
+    const IndType *displ_ptr = displ.data();
+    const IndType *indices_ptr = indices.data();
+    const ScalarType *vec_ptr = vec.data();
 
-    pybind11::gil_scoped_acquire acquire;
-    return out;
-}
+    const IndType vsize = static_cast<IndType>(vec.size());
+    if (vsize != cols)
+        throw std::runtime_error("Size mismatch.");
 
-template <typename T, typename I>
-Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>
-SpMM(I rows, I cols, I nnz,
-     const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> &data,
-     const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indptr,
-     const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indices,
-     const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> &dense)
-{
-    Eigen::setNbThreads(1);
-    assert(cols == dense.rows());
-    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> out(rows, dense.cols());
-    if (nnz > 0)
+    if (nnz != displ_ptr[rows])
+        throw std::runtime_error("The sparse matrix data are not consistent.");
+
+    // Allocate output array
+    array_t<ScalarType> result(rows);
+    auto buffer = result.request(true);
+    ScalarType *result_ptr = (ScalarType *)buffer.ptr;
+
+    py::gil_scoped_release release;
+
+    #pragma omp parallel for schedule(guided)
+    for (IndType i = 0; i < rows; i++)
     {
-#pragma omp parallel for schedule(guided)
-        for (I i = 0; i < rows; ++i)
+        const IndType local_size = displ_ptr[i + 1] - displ_ptr[i];
+        const ScalarType *current_data = data_ptr + displ_ptr[i];
+        const IndType *current_inds = indices_ptr + displ_ptr[i];
+        
+        // FIXME: Provide reduction(+: result_i) for complex
+        ScalarType result_i = 0;
+        #pragma omp simd
+        for (IndType j = 0; j < local_size; j++)
         {
-            const I local_size = indptr[i + 1] - indptr[i];
-            const auto local_data = data.segment(indptr[i], local_size);
-            const auto local_cols = indices.segment(indptr[i], local_size);
-            const auto dense_data = dense(local_cols, Eigen::all);
-            out(i, Eigen::all) = local_data.transpose() * dense_data;
+            const IndType idx = current_inds[j];
+            result_i += (current_data[j] * vec_ptr[idx]);
         }
+
+        result_ptr[i] = result_i;
     }
-    pybind11::gil_scoped_acquire acquire;
-    return out;
+
+    py::gil_scoped_acquire acquire;
+
+    return result;
 }
 
-template <typename T, typename I>
-Eigen::Matrix<T, Eigen::Dynamic, 1>
-SPMV_eigen(I rows, I cols, I nnz,
-           const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> &data,
-           const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indptr,
-           const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indices,
-           const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> v1)
+template <typename ScalarType, typename IndType>
+array_t<ScalarType>
+matmat(IndType srows, IndType scols, IndType nnz,
+       const array_t<ScalarType> &data,
+       const array_t<IndType> &displ,
+       const array_t<IndType> &indices,
+       const array_t<ScalarType> &dense)
 {
-    // Currently only work with row-major sparse matrix in parallel
-    Eigen::Map<const Eigen::SparseMatrix<T, Eigen::RowMajor>> sm1(rows, cols, nnz, indptr.data(), indices.data(), data.data());
-    Eigen::Matrix<T, Eigen::Dynamic, 1> v2 = sm1 * v1;
-    pybind11::gil_scoped_acquire acquire;
-    return v2;
+    // get pointers to sparse matrix data
+    const ScalarType *data_ptr = data.data();
+    const IndType *displ_ptr = displ.data();
+    const IndType *indices_ptr = indices.data();
+
+    // get pointers to dense matrix data
+    const IndType drows = dense.shape(0);
+    const IndType dcols = dense.shape(1);
+    const ScalarType *dense_ptr = dense.data();
+
+    // Check data consistency
+    if (drows != scols)
+        throw std::runtime_error("Size mismatch.");
+
+    if (nnz != displ_ptr[srows])
+        throw std::runtime_error("The sparse matrix data are not consistent.");
+
+    // Allocate output array
+    array_t<ScalarType> result(srows * dcols);
+    auto buffer = result.request(true);
+    ScalarType *result_ptr = (ScalarType *)buffer.ptr;
+    std::fill(result.mutable_data(), result.mutable_data() + result.size(), 0.);
+
+    py::gil_scoped_release release;
+
+    #pragma omp parallel for schedule(guided)
+    for (IndType i = 0; i < srows; i++)
+    {
+        const IndType local_size = displ_ptr[i + 1] - displ_ptr[i];
+        const ScalarType *current_data = data_ptr + displ_ptr[i];
+        const IndType *current_inds = indices_ptr + displ_ptr[i];
+        
+        for (IndType k = 0; k < local_size; k++)
+            #pragma omp simd
+            for (IndType j = 0; j < dcols; j++)
+            {
+                const IndType idx = (dcols * current_inds[k]) + j;
+                result_ptr[i * dcols + j] += current_data[k] * dense_ptr[idx];
+            }
+    }
+
+    py::gil_scoped_acquire acquire;
+
+    result.resize({srows, dcols});
+
+    return result;
 }

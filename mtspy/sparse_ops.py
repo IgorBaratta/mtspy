@@ -4,7 +4,7 @@ from scipy import sparse
 import warnings
 
 
-def matvec(A: sparse.spmatrix, x: numpy.ndarray):
+def matvec(A: sparse.spmatrix, x: numpy.ndarray, use_eigen=False):
     """
     Performs the operation y = A * x where A is an (m, n) sparse matrix
     and x is a column vector or rank-1 array.
@@ -31,14 +31,21 @@ def matvec(A: sparse.spmatrix, x: numpy.ndarray):
     # Convert to row-major (C-style) if it's not already.
     x = numpy.asanyarray(x, dtype=A.dtype, order='C')
 
-    y = cpp.spmv(m, n, A.nnz,
-                 A.data, A.indptr,
-                 A.indices, x)
+    if use_eigen:
+        # Use Eigen backend
+        # TODO: Remove Eigen
+        spmv = cpp.spmv
+    else:
+        spmv = cpp.matvec
+
+    y = spmv(m, n, A.nnz,
+             A.data, A.indptr,
+             A.indices, x)
 
     return y
 
 
-def matmat(A: sparse.spmatrix, X: numpy.ndarray):
+def matmat(A: sparse.spmatrix, X: numpy.ndarray, use_eigen: bool = False):
     """
     Performs the operation C = A * B,  where A is a (m, k) sparse matrix
     and B is a (k, n) dense matrix.
@@ -68,8 +75,15 @@ def matmat(A: sparse.spmatrix, X: numpy.ndarray):
     # Convert to row-major (C-style) if it's not already.
     X = numpy.asanyarray(X, dtype=dtype, order='C')
 
-    Y = cpp.spmm(m, n, A.nnz,
-                 A.data, A.indptr,
-                 A.indices, X)
+    if use_eigen:
+        # Use Eigen backend
+        # TODO: Remove Eigen
+        spmm = cpp.spmm
+    else:
+        spmm = cpp.matmat
+
+    Y = spmm(m, n, A.nnz,
+             A.data, A.indptr,
+             A.indices, X)
 
     return Y
