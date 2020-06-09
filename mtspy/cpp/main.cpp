@@ -3,11 +3,22 @@
 #include <complex>
 #include "sparse.hpp"
 #include "thread_control.hpp"
+#include "vector.hpp"
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(mtspy_cpp, m)
 {
+    m.def("matvec", &matvec<float, std::int32_t>, py::return_value_policy::move);
+    m.def("matvec", &matvec<double, std::int32_t>, py::return_value_policy::move);
+    // m.def("matvec", &matvec<std::complex<float>, std::int32_t>, py::return_value_policy::move);
+    // m.def("matvec", &matvec<std::complex<double>, std::int32_t>, py::return_value_policy::move);
+
+    m.def("matmat", &matmat<float, std::int32_t>, py::return_value_policy::move);
+    m.def("matmat", &matmat<double, std::int32_t>, py::return_value_policy::move);
+    m.def("matmat", &matmat<std::complex<float>, std::int32_t>, py::return_value_policy::move);
+    m.def("matmat", &matmat<std::complex<double>, std::int32_t>, py::return_value_policy::move);
+
     // SpMV using 32 bit int indices:
     m.def("spmv", &SpMV<float, std::int32_t>, py::call_guard<py::gil_scoped_release>(), py::return_value_policy::move);
     m.def("spmv", &SpMV<double, std::int32_t>, py::call_guard<py::gil_scoped_release>(), py::return_value_policy::move);
