@@ -29,9 +29,8 @@ Make sure to clone with **--recursive** to download the required submodules!
 
 - Numpy
 - Scipy
-- C++ 17 compiler with OpenMP support
-- Eigen3
 - pybind11
+- C++ 17 compiler with OpenMP 4.5 support (eg. gcc>5) 
 
 Using docker container with all requirements installed:
 
