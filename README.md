@@ -3,6 +3,7 @@
 ![CI](https://github.com/IgorBaratta/mtspy/workflows/CI/badge.svg)
 ![CI Docker images](https://img.shields.io/docker/cloud/build/igorbaratta/mtspy)
 ![stability-wip](https://img.shields.io/badge/stability-work_in_progress-lightgrey.svg)
+[![Coverage Status](https://coveralls.io/repos/github/IgorBaratta/mtspy/badge.svg?branch=master)](https://coveralls.io/github/IgorBaratta/mtspy?branch=master)
 
 Multi-threaded sparse matrix operations in Python
 
