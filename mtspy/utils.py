@@ -3,7 +3,6 @@ import urllib.request
 import os
 from scipy.io import mmread
 from scipy.sparse import csr_matrix
-import numpy
 
 
 def get_matrix(Name: str, verbose: bool = True) -> csr_matrix:
