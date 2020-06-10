@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.10)
 project(mtspy_cpp)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -24,9 +24,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 # find packages and dependencies
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/mtspy/cpp/cmake/modules")
 
-find_package(Python3 REQUIRED Interpreter Development)
-find_package(pybind11 CONFIG HINTS ${PYBIND11_DIR} ${PYBIND11_ROOT}
-  $ENV{PYBIND11_DIR} $ENV{PYBIND11_ROOT} QUIET)
+find_package(pybind11 CONFIG HINTS $ENV{PYBIND11_DIR} $ENV{PYBIND11_ROOT} QUIET)
 if (NOT pybind11_FOUND)
     add_subdirectory("${PROJECT_SOURCE_DIR}/third-party/pybind11")
     set(pybind11_FOUND)

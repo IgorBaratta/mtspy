@@ -4,7 +4,7 @@ from scipy import sparse
 import warnings
 
 
-def matvec(A: sparse.spmatrix, x: numpy.ndarray, use_eigen=False):
+def matvec(A: sparse.spmatrix, x: numpy.ndarray, use_eigen=False) -> numpy.ndarray:
     """
     Performs the operation y = A * x where A is an (m, n) sparse matrix
     and x is a column vector or rank-1 array.
@@ -45,7 +45,7 @@ def matvec(A: sparse.spmatrix, x: numpy.ndarray, use_eigen=False):
     return y
 
 
-def matmat(A: sparse.spmatrix, X: numpy.ndarray, use_eigen: bool = False):
+def matmat(A: sparse.spmatrix, X: numpy.ndarray, use_eigen: bool = False) -> numpy.ndarray:
     """
     Performs the operation C = A * B,  where A is a (m, k) sparse matrix
     and B is a (k, n) dense matrix.
