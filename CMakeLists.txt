@@ -19,7 +19,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 # find packages and dependencies
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/mtspy/cpp/cmake/modules")
@@ -37,19 +37,22 @@ endif()
 
 # Check for required packages
 find_package(OpenMP REQUIRED)
-find_package(Eigen3 3.3.9 REQUIRED)
 pybind11_add_module(mtspy_cpp mtspy/cpp/main.cpp)
 
-target_include_directories(mtspy_cpp SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
 target_link_libraries(mtspy_cpp PUBLIC OpenMP::OpenMP_CXX)
 
 # Find optional packages
-set(BLA_VENDOR Intel10_64lp_seq)
-find_package(LAPACK QUIET)
-if (LAPACK_FOUND)
-    include_directories(${BLAS_INCLUDE_DIRS})
-    add_definitions(-DEIGEN_USE_MKL_ALL)
-    add_definitions(-DMKL_ILP64 -m64 -I${MKLROOT}/include)
-    target_link_libraries(mtspy_cpp PUBLIC mkl_intel_ilp64 mkl_sequential mkl_core dl m)
-    message("-- Using MKL as dense operations backend")
+find_package(Eigen3 3.3.9 QUIET)
+if(${EIGEN3_FOUND})
+    add_definitions(-DUSE_EIGEN_BACKEND)
+    target_include_directories(mtspy_cpp SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
+        set(BLA_VENDOR Intel10_64lp)
+        find_package(LAPACK QUIET)
+        if (LAPACK_FOUND)
+            include_directories(${BLAS_INCLUDE_DIRS})
+            add_definitions(-DEIGEN_USE_MKL_ALL)
+            add_definitions(-DMKL_ILP64 -m64 -I${MKLROOT}/include)
+            target_link_libraries(mtspy_cpp PUBLIC mkl_intel_ilp64 mkl_sequential mkl_core dl m)
+            message("-- Using MKL as dense operations backend")
+        endif()
 endif()
