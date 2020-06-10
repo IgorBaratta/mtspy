@@ -33,7 +33,7 @@ def matvec(A: sparse.spmatrix, x: numpy.ndarray, use_eigen=False):
 
     if use_eigen:
         # Use Eigen backend
-        # TODO: Remove Eigen
+        # TODO: Remove Eigen backend
         spmv = cpp.spmv
     else:
         spmv = cpp.matvec
@@ -77,7 +77,7 @@ def matmat(A: sparse.spmatrix, X: numpy.ndarray, use_eigen: bool = False):
 
     if use_eigen:
         # Use Eigen backend
-        # TODO: Remove Eigen
+        # TODO: Remove Eigen backend
         spmm = cpp.spmm
     else:
         spmm = cpp.matmat

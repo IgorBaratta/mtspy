@@ -4,8 +4,8 @@ from mtspy import thread_control, matvec, matmat
 
 
 numpy.seterr(all='warn', over='raise')
-N = 10000
-Ncols = 1000
+N = 100000
+Ncols = 1
 diags = numpy.arange(start=-200, stop=200)
 values = numpy.random.rand(diags.size)
 M = sparse.diags(values, diags, shape=(N, N), format='csr', dtype=numpy.float64)
@@ -40,5 +40,4 @@ GFLOPS[2] = (2 * M.nnz * Ncols / th.elapsed_time) * 1e-9
 
 assert (numpy.allclose(y - v1, 0))
 print(thread_control.get_max_threads())
-
 print(GFLOPS)
