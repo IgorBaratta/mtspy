@@ -1,6 +1,5 @@
-#include <omp.h>
 #include <assert.h>
-#include <Eigen/Core>
+#include <omp.h>
 
 int get_max_threads()
 {
