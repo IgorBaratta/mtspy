@@ -29,7 +29,7 @@ with thread_control(args.threads) as th:
 mt_time = th.elapsed_time
 mt_gflops = (2 * A.nnz * args.ncols / mt_time) * 1e-9
 
-# TODO: Create summary and add to a csv
+# TODO: add summary to a csv
 # Print summary
 speedup = sp_time / mt_time
 

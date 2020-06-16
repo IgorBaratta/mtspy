@@ -1,71 +1,39 @@
-#include <iostream>
+#ifdef USE_EIGEN_BACKEND
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <pybind11/pybind11.h>
+#include <iostream>
 #include <omp.h>
+#include <pybind11/eigen.h>
+#include <pybind11/pybind11.h>
 
-template <typename T, typename I>
-Eigen::Matrix<T, Eigen::Dynamic, 1>
-SpMV(I rows, I cols, I nnz,
-     const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> &data,
-     const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indptr,
-     const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indices,
-     const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> b)
+template <class ScalarType>
+using dense_matrix = Eigen::Matrix<ScalarType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+
+template <typename ScalarType, typename IndType>
+dense_matrix<ScalarType>
+SpMM_eigen(IndType rows, IndType cols, IndType nnz,
+           const Eigen::Ref<Eigen::Matrix<ScalarType, Eigen::Dynamic, 1>> &data,
+           const Eigen::Ref<Eigen::Matrix<IndType, Eigen::Dynamic, 1>> &indptr,
+           const Eigen::Ref<Eigen::Matrix<IndType, Eigen::Dynamic, 1>> &indices,
+           const Eigen::Ref<dense_matrix<ScalarType>> dense)
 {
-    assert(cols == rows);
-    Eigen::Matrix<T, Eigen::Dynamic, 1> out(rows);
-    if (nnz > 0)
-#pragma omp parallel for schedule(guided)
-        for (int i = 0; i < rows; ++i)
-        {
-            const int local_size = indptr[i + 1] - indptr[i];
-            auto local_data = data.segment(indptr[i], local_size);
-            auto local_cols = indices.segment(indptr[i], local_size);
-            out[i] = local_data.transpose() * b(local_cols);
-        }
 
+    pybind11::gil_scoped_release release;
+    // Eigen only work with row-major sparse matrix in parallel
+    Eigen::Map<const Eigen::SparseMatrix<ScalarType, Eigen::RowMajor>> sm1(rows, cols, nnz, indptr.data(), indices.data(), data.data());
+    dense_matrix<ScalarType> output = sm1 * dense;
     pybind11::gil_scoped_acquire acquire;
-    return out;
+    return output;
 }
 
-template <typename T, typename I>
-Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>
-SpMM(I rows, I cols, I nnz,
-     const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> &data,
-     const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indptr,
-     const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indices,
-     const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> &dense)
-{
-    Eigen::setNbThreads(1);
-    assert(cols == dense.rows());
-    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> out(rows, dense.cols());
-    if (nnz > 0)
-    {
-#pragma omp parallel for schedule(guided)
-        for (I i = 0; i < rows; ++i)
-        {
-            const I local_size = indptr[i + 1] - indptr[i];
-            const auto local_data = data.segment(indptr[i], local_size);
-            const auto local_cols = indices.segment(indptr[i], local_size);
-            const auto dense_data = dense(local_cols, Eigen::all);
-            out(i, Eigen::all) = local_data.transpose() * dense_data;
-        }
-    }
-    pybind11::gil_scoped_acquire acquire;
-    return out;
-}
+#endif
 
-template <typename T, typename I>
-Eigen::Matrix<T, Eigen::Dynamic, 1>
-SPMV_eigen(I rows, I cols, I nnz,
-           const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> &data,
-           const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indptr,
-           const Eigen::Ref<Eigen::Matrix<I, Eigen::Dynamic, 1>> &indices,
-           const Eigen::Ref<Eigen::Matrix<T, Eigen::Dynamic, 1>> v1)
+bool has_eigen()
 {
-    // Currently only work with row-major sparse matrix in parallel
-    Eigen::Map<const Eigen::SparseMatrix<T, Eigen::RowMajor>> sm1(rows, cols, nnz, indptr.data(), indices.data(), data.data());
-    Eigen::Matrix<T, Eigen::Dynamic, 1> v2 = sm1 * v1;
-    pybind11::gil_scoped_acquire acquire;
-    return v2;
+#ifdef USE_EIGEN_BACKEND
+    return true;
+#else
+    return false;
+#endif
 }

@@ -1,4 +1,3 @@
-#include <iostream>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
@@ -9,11 +8,11 @@ using array_t = py::array_t<T, py::array::c_style | py::array::forcecast>;
 
 template <typename ScalarType, typename IndType>
 array_t<ScalarType>
-matvec(IndType rows, IndType cols, IndType nnz,
-       const array_t<ScalarType> &data,
-       const array_t<IndType> &displ,
-       const array_t<IndType> &indices,
-       const array_t<ScalarType> &vec)
+SpMV(IndType rows, IndType cols, IndType nnz,
+     const array_t<ScalarType> &data,
+     const array_t<IndType> &displ,
+     const array_t<IndType> &indices,
+     const array_t<ScalarType> &vec)
 {
     // get data pointers
     const ScalarType *data_ptr = data.data();
@@ -61,11 +60,11 @@ matvec(IndType rows, IndType cols, IndType nnz,
 
 template <typename ScalarType, typename IndType>
 array_t<ScalarType>
-matmat(IndType srows, IndType scols, IndType nnz,
-       const array_t<ScalarType> &data,
-       const array_t<IndType> &displ,
-       const array_t<IndType> &indices,
-       const array_t<ScalarType> &dense)
+SpMM(IndType srows, IndType scols, IndType nnz,
+     const array_t<ScalarType> &data,
+     const array_t<IndType> &displ,
+     const array_t<IndType> &indices,
+     const array_t<ScalarType> &dense)
 {
     // get pointers to sparse matrix data
     const ScalarType *data_ptr = data.data();

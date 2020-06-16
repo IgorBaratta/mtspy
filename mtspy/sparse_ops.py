@@ -7,7 +7,7 @@ import warnings
 def matvec(A: sparse.spmatrix, x: numpy.ndarray, use_eigen=False) -> numpy.ndarray:
     """
     Performs the operation y = A * x where A is an (m, n) sparse matrix
-    and x is a column vector or rank-1 array.
+    and x is a column vector or rank-1 array of size m.
 
     To avoid copies it's recommended that A and x have the same dtype.
     """
@@ -20,7 +20,11 @@ def matvec(A: sparse.spmatrix, x: numpy.ndarray, use_eigen=False) -> numpy.ndarr
                           sparse.SparseEfficiencyWarning)
             A = sparse.csr_matrix(A)
 
-    if x.shape != (n,) and x.shape != (n, 1):
+    if x.shape == (n,):
+        output_shape = (m,)
+    elif x.shape == (n, 1):
+        output_shape = (m, 1)
+    else:
         raise ValueError('Dimension mismatch')
 
     if numpy.iscomplexobj(x) and not numpy.iscomplexobj(A):
@@ -31,24 +35,28 @@ def matvec(A: sparse.spmatrix, x: numpy.ndarray, use_eigen=False) -> numpy.ndarr
     # Convert to row-major (C-style) if it's not already.
     x = numpy.asanyarray(x, dtype=A.dtype, order='C')
 
+    spmv = cpp.spmv
+
+    # If use_eigen is true try to use as a computational backend,
+    # fallback to built-in spmv if it's not linked
     if use_eigen:
-        # Use Eigen backend
-        # TODO: Remove Eigen backend
-        spmv = cpp.spmv
-    else:
-        spmv = cpp.matvec
+        try:
+            spmv = cpp.spmm_eigen
+        except AttributeError:
+            print("Eigen not available, using built-in backend.")
 
     y = spmv(m, n, A.nnz,
              A.data, A.indptr,
              A.indices, x)
 
-    return y
+    return numpy.reshape(y, output_shape, 'C')
 
 
 def matmat(A: sparse.spmatrix, X: numpy.ndarray, use_eigen: bool = False) -> numpy.ndarray:
     """
     Performs the operation C = A * B,  where A is a (m, k) sparse matrix
     and B is a (k, n) dense matrix.
+
 
     To avoid copies it's recommended that A and X have the same dtype.
     """
@@ -75,12 +83,14 @@ def matmat(A: sparse.spmatrix, X: numpy.ndarray, use_eigen: bool = False) -> num
     # Convert to row-major (C-style) if it's not already.
     X = numpy.asanyarray(X, dtype=dtype, order='C')
 
+    spmm = cpp.spmm
+    # If use_eigen is true try to use as a computational backend,
+    # fallback to built-in spmv if it's not linked
     if use_eigen:
-        # Use Eigen backend
-        # TODO: Remove Eigen backend
-        spmm = cpp.spmm
-    else:
-        spmm = cpp.matmat
+        try:
+            spmm = cpp.spmm_eigen
+        except AttributeError:
+            print("Eigen not available, using built-in backend instead.")
 
     Y = spmm(m, n, A.nnz,
              A.data, A.indptr,
