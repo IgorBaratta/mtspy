@@ -14,7 +14,7 @@ SpMV(IndType rows, IndType cols, IndType nnz,
      const array_t<IndType> &indices,
      const array_t<ScalarType> &vec)
 {
-    // get pointers to data
+    // get data pointers
     const ScalarType *data_ptr = data.data();
     const IndType *displ_ptr = displ.data();
     const IndType *indices_ptr = indices.data();
