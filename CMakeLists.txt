@@ -37,7 +37,7 @@ pybind11_add_module(mtspy_cpp mtspy/cpp/main.cpp)
 target_link_libraries(mtspy_cpp PUBLIC OpenMP::OpenMP_CXX)
 
 # Find optional packages
-find_package(Eigen3 3.3.9 REQUIRED)
+find_package(Eigen3 3.3.9)
 if(${EIGEN3_FOUND})
     add_definitions(-DUSE_EIGEN_BACKEND)
     target_include_directories(mtspy_cpp SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
