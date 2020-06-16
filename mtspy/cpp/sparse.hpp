@@ -9,11 +9,11 @@ using array_t = py::array_t<T, py::array::c_style | py::array::forcecast>;
 
 template <typename ScalarType, typename IndType>
 array_t<ScalarType>
-matvec(IndType rows, IndType cols, IndType nnz,
-       const array_t<ScalarType> &data,
-       const array_t<IndType> &displ,
-       const array_t<IndType> &indices,
-       const array_t<ScalarType> &vec)
+SpMV(IndType rows, IndType cols, IndType nnz,
+     const array_t<ScalarType> &data,
+     const array_t<IndType> &displ,
+     const array_t<IndType> &indices,
+     const array_t<ScalarType> &vec)
 {
     // get pointers to data
     const ScalarType *data_ptr = data.data();
@@ -35,16 +35,16 @@ matvec(IndType rows, IndType cols, IndType nnz,
 
     py::gil_scoped_release release;
 
-    #pragma omp parallel for schedule(guided)
+#pragma omp parallel for schedule(guided)
     for (IndType i = 0; i < rows; i++)
     {
         const IndType local_size = displ_ptr[i + 1] - displ_ptr[i];
         const ScalarType *current_data = data_ptr + displ_ptr[i];
         const IndType *current_inds = indices_ptr + displ_ptr[i];
-        
+
         // FIXME: Provide reduction(+: result_i) for complex
         ScalarType result_i = 0;
-        #pragma omp simd
+#pragma omp simd
         for (IndType j = 0; j < local_size; j++)
         {
             const IndType idx = current_inds[j];
@@ -56,16 +56,18 @@ matvec(IndType rows, IndType cols, IndType nnz,
 
     py::gil_scoped_acquire acquire;
 
-    return result;
+    if
+
+        return result;
 }
 
 template <typename ScalarType, typename IndType>
 array_t<ScalarType>
-matmat(IndType srows, IndType scols, IndType nnz,
-       const array_t<ScalarType> &data,
-       const array_t<IndType> &displ,
-       const array_t<IndType> &indices,
-       const array_t<ScalarType> &dense)
+SpMM(IndType srows, IndType scols, IndType nnz,
+     const array_t<ScalarType> &data,
+     const array_t<IndType> &displ,
+     const array_t<IndType> &indices,
+     const array_t<ScalarType> &dense)
 {
     // get pointers to sparse matrix data
     const ScalarType *data_ptr = data.data();
@@ -92,15 +94,15 @@ matmat(IndType srows, IndType scols, IndType nnz,
 
     py::gil_scoped_release release;
 
-    #pragma omp parallel for schedule(guided)
+#pragma omp parallel for schedule(guided)
     for (IndType i = 0; i < srows; i++)
     {
         const IndType local_size = displ_ptr[i + 1] - displ_ptr[i];
         const ScalarType *current_data = data_ptr + displ_ptr[i];
         const IndType *current_inds = indices_ptr + displ_ptr[i];
-        
+
         for (IndType k = 0; k < local_size; k++)
-            #pragma omp simd
+#pragma omp simd
             for (IndType j = 0; j < dcols; j++)
             {
                 const IndType idx = (dcols * current_inds[k]) + j;

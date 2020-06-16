@@ -30,11 +30,6 @@ if (NOT pybind11_FOUND)
     set(pybind11_FOUND)
 endif()
 
-# Try to check if user provided EIGEN3_INCLUDE_DIR
-if(NOT ENV{EIGEN3_INCLUDE_DIR})
-    set(EIGEN3_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third-party/eigen")
-endif()
-
 # Check for required packages
 find_package(OpenMP REQUIRED)
 pybind11_add_module(mtspy_cpp mtspy/cpp/main.cpp)
@@ -42,7 +37,7 @@ pybind11_add_module(mtspy_cpp mtspy/cpp/main.cpp)
 target_link_libraries(mtspy_cpp PUBLIC OpenMP::OpenMP_CXX)
 
 # Find optional packages
-find_package(Eigen3 3.3.9 QUIET)
+find_package(Eigen3 3.3.9 REQUIRED)
 if(${EIGEN3_FOUND})
     add_definitions(-DUSE_EIGEN_BACKEND)
     target_include_directories(mtspy_cpp SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
