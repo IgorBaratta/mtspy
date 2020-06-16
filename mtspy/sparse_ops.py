@@ -35,14 +35,15 @@ def matvec(A: sparse.spmatrix, x: numpy.ndarray, use_eigen=False) -> numpy.ndarr
     # Convert to row-major (C-style) if it's not already.
     x = numpy.asanyarray(x, dtype=A.dtype, order='C')
 
+    spmv = cpp.spmv
+
+    # If use_eigen is true try to use as a computational backend,
+    # fallback to built-in spmv if it's not linked
     if use_eigen:
-        # Use Eigen backend
         try:
             spmv = cpp.spmm_eigen
-        except:
-            print("Eigen not available")
-    else:
-        spmv = cpp.spmv
+        except AttributeError:
+            print("Eigen not available, using built-in backend.")
 
     y = spmv(m, n, A.nnz,
              A.data, A.indptr,
@@ -82,14 +83,14 @@ def matmat(A: sparse.spmatrix, X: numpy.ndarray, use_eigen: bool = False) -> num
     # Convert to row-major (C-style) if it's not already.
     X = numpy.asanyarray(X, dtype=dtype, order='C')
 
+    spmm = cpp.spmm
+    # If use_eigen is true try to use as a computational backend,
+    # fallback to built-in spmv if it's not linked
     if use_eigen:
-        # Use Eigen backend
         try:
             spmm = cpp.spmm_eigen
-        except:
-            spmm = cpp.spmm
-    else:
-        spmm = cpp.spmm
+        except AttributeError:
+            print("Eigen not available, using built-in backend instead.")
 
     Y = spmm(m, n, A.nnz,
              A.data, A.indptr,
