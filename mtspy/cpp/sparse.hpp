@@ -55,9 +55,7 @@ SpMV(IndType rows, IndType cols, IndType nnz,
 
     py::gil_scoped_acquire acquire;
 
-    if
-
-        return result;
+    return result;
 }
 
 template <typename ScalarType, typename IndType>

@@ -28,3 +28,12 @@ SpMM_eigen(IndType rows, IndType cols, IndType nnz,
 }
 
 #endif
+
+bool has_eigen()
+{
+#ifdef USE_EIGEN_BACKEND
+    return true;
+#else
+    return false;
+#endif
+}

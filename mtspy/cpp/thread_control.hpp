@@ -1,4 +1,3 @@
-#include <Eigen/Core>
 #include <assert.h>
 #include <omp.h>
 

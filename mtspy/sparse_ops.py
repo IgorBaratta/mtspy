@@ -37,7 +37,10 @@ def matvec(A: sparse.spmatrix, x: numpy.ndarray, use_eigen=False) -> numpy.ndarr
 
     if use_eigen:
         # Use Eigen backend
-        spmv = cpp.spmm_eigen
+        try:
+            spmv = cpp.spmm_eigen
+        except:
+            print("Eigen not available")
     else:
         spmv = cpp.spmv
 
@@ -81,8 +84,10 @@ def matmat(A: sparse.spmatrix, X: numpy.ndarray, use_eigen: bool = False) -> num
 
     if use_eigen:
         # Use Eigen backend
-        # TODO: Remove Eigen backend
-        spmm = cpp.spmm_eigen
+        try:
+            spmm = cpp.spmm_eigen
+        except:
+            spmm = cpp.spmm
     else:
         spmm = cpp.spmm
 

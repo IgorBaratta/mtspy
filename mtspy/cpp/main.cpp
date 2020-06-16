@@ -40,6 +40,9 @@ PYBIND11_MODULE(mtspy_cpp, m)
     m.def("spmm_eigen", &SpMM_eigen<std::complex<float>, std::int32_t>, py::return_value_policy::move);
     m.def("spmm_eigen", &SpMM_eigen<std::complex<double>, std::int32_t>, py::return_value_policy::move);
 #endif
+
+    m.def("has_eigen", &has_eigen);
+
     //-------------------------------------------------------------------------------------//
     // Thread Control:
     m.def("get_max_threads", &get_max_threads);

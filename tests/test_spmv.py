@@ -5,7 +5,12 @@ import pytest
 import mtspy
 
 dtype_list = [numpy.float32, numpy.float64, numpy.complex64, numpy.complex128]
-eigen_backend = [False, True]
+if mtspy.cpp.has_eigen():
+    eigen_backend = [False, True]
+else:
+    eigen_backend = [False]
+
+print(eigen_backend)
 
 
 @pytest.mark.parametrize('dtype', dtype_list)
