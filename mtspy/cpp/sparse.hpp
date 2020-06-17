@@ -3,15 +3,13 @@
 
 namespace py = pybind11;
 
-template <class T>
-using array_t = py::array_t<T, py::array::c_style | py::array::forcecast>;
+template <class ScalarType>
+using array_t = py::array_t<ScalarType, py::array::c_style | py::array::forcecast>;
 
 template <typename ScalarType, typename IndType>
 array_t<ScalarType>
-SpMV(IndType rows, IndType cols, IndType nnz,
-     const array_t<ScalarType> &data,
-     const array_t<IndType> &displ,
-     const array_t<IndType> &indices,
+SpMV(IndType rows, IndType cols, IndType nnz, const array_t<ScalarType> &data,
+     const array_t<IndType> &displ, const array_t<IndType> &indices,
      const array_t<ScalarType> &vec)
 {
     // get data pointers
@@ -60,10 +58,8 @@ SpMV(IndType rows, IndType cols, IndType nnz,
 
 template <typename ScalarType, typename IndType>
 array_t<ScalarType>
-SpMM(IndType srows, IndType scols, IndType nnz,
-     const array_t<ScalarType> &data,
-     const array_t<IndType> &displ,
-     const array_t<IndType> &indices,
+SpMM(IndType srows, IndType scols, IndType nnz, const array_t<ScalarType> &data,
+     const array_t<IndType> &displ, const array_t<IndType> &indices,
      const array_t<ScalarType> &dense)
 {
     // get pointers to sparse matrix data

@@ -10,8 +10,6 @@ if mtspy.cpp.has_eigen():
 else:
     eigen_backend = [False]
 
-print(eigen_backend)
-
 
 @pytest.mark.parametrize('dtype', dtype_list)
 @pytest.mark.parametrize('use_eigen', eigen_backend)
@@ -47,3 +45,15 @@ def test_spmv_64bit_ind(dtype, use_eigen):
     v1 = mtspy.matvec(M, v0, use_eigen)
     v2 = M @ v0
     assert(numpy.allclose(v1, v2))
+
+
+if __name__ == "__main__":
+    N = 100
+    M = sparse.random(N, N, density=0.1, format="csr")
+    m, n = M.shape
+    A = mtspy.cpp.sparse_sparse_eigen(m, n, M.nnz, M.data, M.indptr, M.indices,
+                                      m, n, M.nnz, M.data, M.indptr, M.indices)
+
+    C = M @ M
+
+    assert((A - C).data.all())
