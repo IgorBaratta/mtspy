@@ -108,6 +108,7 @@ def spmatmat(A: sparse.spmatrix, B: sparse.spmatrix , use_eigen: bool = True) ->
             spmspm = cpp.sparse_sparse_eigen
         except AttributeError:
             print("Eigen not available.")
+            raise NotImplementedError
     else:
         raise NotImplementedError
 
