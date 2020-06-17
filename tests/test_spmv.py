@@ -48,6 +48,7 @@ def test_sparse_dense_int32(dtype, use_eigen):
 
 
 @pytest.mark.parametrize('dtype', dtype_list)
+@pytest.mark.skipif(not mtspy.cpp.has_eigen(), reason="Sparse-Sparse Matrix Product only supported with eigen backend.")
 def test_sparse_sparse_int32(dtype):
     m, n, k = 500, 1000, 2000
     A = sparse.random(m, k, density=0.1, format="csr")
