@@ -10,46 +10,54 @@ PYBIND11_MODULE(mtspy_cpp, m)
 {
     //-------------------------------------------------------------------------------------//
     // Sparse Matrix Vector Product (32 bit indices)
-    m.def("spmv", &SpMV<float, std::int32_t>, py::return_value_policy::move);
-    m.def("spmv", &SpMV<double, std::int32_t>, py::return_value_policy::move);
-    m.def("spmv", &SpMV<std::complex<float>, std::int32_t>, py::return_value_policy::move);
-    m.def("spmv", &SpMV<std::complex<double>, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_vec", &sparse_vec<float, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_vec", &sparse_vec<double, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_vec", &sparse_vec<std::complex<float>, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_vec", &sparse_vec<std::complex<double>, std::int32_t>, py::return_value_policy::move);
     // Sparse Matrix Vector Product (64 bit indices)
-    m.def("spmv", &SpMV<float, std::int64_t>, py::return_value_policy::move);
-    m.def("spmv", &SpMV<double, std::int64_t>, py::return_value_policy::move);
-    m.def("spmv", &SpMV<std::complex<float>, std::int64_t>, py::return_value_policy::move);
-    m.def("spmv", &SpMV<std::complex<double>, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_vec", &sparse_vec<float, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_vec", &sparse_vec<double, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_vec", &sparse_vec<std::complex<float>, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_vec", &sparse_vec<std::complex<double>, std::int64_t>, py::return_value_policy::move);
 
     //-------------------------------------------------------------------------------------//
     // Sparse Matrix - Dense Matrix Product (32 bit indices)
-    m.def("spmm", &SpMM<float, std::int32_t>, py::return_value_policy::move);
-    m.def("spmm", &SpMM<double, std::int32_t>, py::return_value_policy::move);
-    m.def("spmm", &SpMM<std::complex<float>, std::int32_t>, py::return_value_policy::move);
-    m.def("spmm", &SpMM<std::complex<double>, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_dense", &sparse_dense<float, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_dense", &sparse_dense<double, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_dense", &sparse_dense<std::complex<float>, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_dense", &sparse_dense<std::complex<double>, std::int32_t>, py::return_value_policy::move);
     // Sparse Matrix - Dense Matrix Product (64 bit indices)
-    m.def("spmm", &SpMM<float, std::int64_t>, py::return_value_policy::move);
-    m.def("spmm", &SpMM<double, std::int64_t>, py::return_value_policy::move);
-    m.def("spmm", &SpMM<std::complex<float>, std::int64_t>, py::return_value_policy::move);
-    m.def("spmm", &SpMM<std::complex<double>, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_dense", &sparse_dense<float, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_dense", &sparse_dense<double, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_dense", &sparse_dense<std::complex<float>, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_dense", &sparse_dense<std::complex<double>, std::int64_t>, py::return_value_policy::move);
 
 #ifdef USE_EIGEN_BACKEND
     //-------------------------------------------------------------------------------------//
     // Sparse Matrix - Dense Matrix Product  using eigen backend (32 bit indices)
-    m.def("spmm_eigen", &sparse_dense_eigen<float, std::int32_t>, py::return_value_policy::move);
-    m.def("spmm_eigen", &sparse_dense_eigen<double, std::int32_t>, py::return_value_policy::move);
-    m.def("spmm_eigen", &sparse_dense_eigen<std::complex<float>, std::int32_t>, py::return_value_policy::move);
-    m.def("spmm_eigen", &sparse_dense_eigen<std::complex<double>, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_dense_eigen", &sparse_dense_eigen<float, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_dense_eigen", &sparse_dense_eigen<double, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_dense_eigen", &sparse_dense_eigen<std::complex<float>, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_dense_eigen", &sparse_dense_eigen<std::complex<double>, std::int32_t>, py::return_value_policy::move);
 
     // Sparse Matrix - Dense Matrix Product  using eigen backend (64 bit indices)
-    m.def("spmm_eigen", &sparse_dense_eigen<float, std::int64_t>, py::return_value_policy::move);
-    m.def("spmm_eigen", &sparse_dense_eigen<double, std::int64_t>, py::return_value_policy::move);
-    m.def("spmm_eigen", &sparse_dense_eigen<std::complex<float>, std::int64_t>, py::return_value_policy::move);
-    m.def("spmm_eigen", &sparse_dense_eigen<std::complex<double>, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_dense_eigen", &sparse_dense_eigen<float, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_dense_eigen", &sparse_dense_eigen<double, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_dense_eigen", &sparse_dense_eigen<std::complex<float>, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_dense_eigen", &sparse_dense_eigen<std::complex<double>, std::int64_t>, py::return_value_policy::move);
 
+    //-------------------------------------------------------------------------------------//
+    // Sparse Matrix - Sparse Matrix Product  using eigen backend (32 bit indices)
     m.def("sparse_sparse_eigen", &sparse_sparse_eigen<float, std::int32_t>, py::return_value_policy::move);
     m.def("sparse_sparse_eigen", &sparse_sparse_eigen<double, std::int32_t>, py::return_value_policy::move);
     m.def("sparse_sparse_eigen", &sparse_sparse_eigen<std::complex<float>, std::int32_t>, py::return_value_policy::move);
     m.def("sparse_sparse_eigen", &sparse_sparse_eigen<std::complex<double>, std::int32_t>, py::return_value_policy::move);
+
+    // Sparse Matrix - Sparse Matrix Product  using eigen backend (64 bit indices)
+    m.def("sparse_sparse_eigen", &sparse_sparse_eigen<float, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_sparse_eigen", &sparse_sparse_eigen<double, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_sparse_eigen", &sparse_sparse_eigen<std::complex<float>, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_sparse_eigen", &sparse_sparse_eigen<std::complex<double>, std::int64_t>, py::return_value_policy::move);
 
 #endif
 

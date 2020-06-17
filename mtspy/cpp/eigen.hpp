@@ -2,8 +2,6 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <iostream>
-#include <omp.h>
 #include <pybind11/eigen.h>
 #include <pybind11/pybind11.h>
 
