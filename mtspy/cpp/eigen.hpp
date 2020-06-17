@@ -7,9 +7,11 @@
 #include <pybind11/eigen.h>
 #include <pybind11/pybind11.h>
 
-template <class ScalarType>
+// declares a row-major dense matrix type of ScalarType
+template <typename ScalarType>
 using dense_matrix = Eigen::Matrix<ScalarType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
+// declares a row-major sparse matrix type of ScalarType, using indices of type Indextype (int32 or int64)
 template <typename ScalarType, typename IndType>
 using sparse_matrix = Eigen::Map<const Eigen::SparseMatrix<ScalarType, Eigen::RowMajor, IndType>>;
 
