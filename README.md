@@ -38,6 +38,12 @@ Using docker container with all requirements installed:
 docker pull igorbaratta/mtspy:latest
 ```
 
+
+### Tests
+```
+python3 -m pytest -v tests/
+```
+
 ## License
 
  **mtspy** is licensed under the GNU General Public License v3.0 -- see the [LICENSE](LICENSE) file for details
