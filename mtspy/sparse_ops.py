@@ -35,13 +35,13 @@ def matvec(A: sparse.spmatrix, x: numpy.ndarray, use_eigen=False) -> numpy.ndarr
     # Convert to row-major (C-style) if it's not already.
     x = numpy.asanyarray(x, dtype=A.dtype, order='C')
 
-    spmv = cpp.spmv
+    spmv = cpp.sparse_vec
 
     # If use_eigen is true try to use as a computational backend,
     # fallback to built-in spmv if it's not linked
     if use_eigen:
         try:
-            spmv = cpp.spmm_eigen
+            spmv = cpp.sparse_dense_eigen
         except AttributeError:
             print("Eigen not available, using built-in backend.")
 
@@ -83,17 +83,35 @@ def matmat(A: sparse.spmatrix, X: numpy.ndarray, use_eigen: bool = False) -> num
     # Convert to row-major (C-style) if it's not already.
     X = numpy.asanyarray(X, dtype=dtype, order='C')
 
-    spmm = cpp.spmm
+    spmm = cpp.sparse_dense
     # If use_eigen is true try to use as a computational backend,
     # fallback to built-in spmv if it's not linked
     if use_eigen:
         try:
-            spmm = cpp.spmm_eigen
+            spmm = cpp.sparse_dense_eigen
         except AttributeError:
             print("Eigen not available, using built-in backend instead.")
 
-    Y = spmm(m, n, A.nnz,
-             A.data, A.indptr,
-             A.indices, X)
+    Y = spmm(m, n, A.nnz, A.data, A.indptr, A.indices, X)
 
     return Y
+
+
+def spmatmat(A: sparse.spmatrix, B: sparse.spmatrix , use_eigen: bool = True) -> numpy.ndarray:
+    """
+    Performs the operation C = A * B,  where A is a (m, k) sparse matrix
+    and B is a (k, n) sparse matrix.
+    """
+
+    if use_eigen:
+        try:
+            spmspm = cpp.sparse_sparse_eigen
+        except AttributeError:
+            print("Eigen not available.")
+    else:
+        raise NotImplementedError
+
+    C = spmspm(A.shape[0], A.shape[1], A.nnz, A.data, A.indptr, A.indices,
+               B.shape[0], B.shape[1], B.nnz, B.data, B.indptr, B.indices,)
+
+    return C

@@ -1,18 +1,15 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
-namespace py = pybind11;
-
+// declares a array_t type of T
 template <class T>
-using array_t = py::array_t<T, py::array::c_style | py::array::forcecast>;
+using array_t = pybind11::array_t<T, pybind11::array::c_style | pybind11::array::forcecast>;
 
 template <typename ScalarType, typename IndType>
 array_t<ScalarType>
-SpMV(IndType rows, IndType cols, IndType nnz,
-     const array_t<ScalarType> &data,
-     const array_t<IndType> &displ,
-     const array_t<IndType> &indices,
-     const array_t<ScalarType> &vec)
+sparse_vec(IndType rows, IndType cols, IndType nnz, const array_t<ScalarType> &data,
+           const array_t<IndType> &displ, const array_t<IndType> &indices,
+           const array_t<ScalarType> &vec)
 {
     // get data pointers
     const ScalarType *data_ptr = data.data();
@@ -32,7 +29,8 @@ SpMV(IndType rows, IndType cols, IndType nnz,
     auto buffer = result.request(true);
     ScalarType *result_ptr = (ScalarType *)buffer.ptr;
 
-    py::gil_scoped_release release;
+    // Temporarily  release global interpreter lock (GIL)
+    pybind11::gil_scoped_release release;
 
 #pragma omp parallel for schedule(guided)
     for (IndType i = 0; i < rows; i++)
@@ -41,7 +39,7 @@ SpMV(IndType rows, IndType cols, IndType nnz,
         const ScalarType *current_data = data_ptr + displ_ptr[i];
         const IndType *current_inds = indices_ptr + displ_ptr[i];
 
-        // FIXME: Provide reduction(+: result_i) for complex
+        // FIXME: Provide custom reduction(+: result_i) for complex
         ScalarType result_i = 0;
 #pragma omp simd
         for (IndType j = 0; j < local_size; j++)
@@ -53,18 +51,16 @@ SpMV(IndType rows, IndType cols, IndType nnz,
         result_ptr[i] = result_i;
     }
 
-    py::gil_scoped_acquire acquire;
+    pybind11::gil_scoped_acquire acquire;
 
     return result;
 }
 
 template <typename ScalarType, typename IndType>
 array_t<ScalarType>
-SpMM(IndType srows, IndType scols, IndType nnz,
-     const array_t<ScalarType> &data,
-     const array_t<IndType> &displ,
-     const array_t<IndType> &indices,
-     const array_t<ScalarType> &dense)
+sparse_dense(IndType srows, IndType scols, IndType nnz, const array_t<ScalarType> &data,
+             const array_t<IndType> &displ, const array_t<IndType> &indices,
+             const array_t<ScalarType> &dense)
 {
     // get pointers to sparse matrix data
     const ScalarType *data_ptr = data.data();
@@ -89,7 +85,8 @@ SpMM(IndType srows, IndType scols, IndType nnz,
     ScalarType *result_ptr = (ScalarType *)buffer.ptr;
     std::fill(result.mutable_data(), result.mutable_data() + result.size(), 0.);
 
-    py::gil_scoped_release release;
+    // Temporarily  release global interpreter lock (GIL)
+    pybind11::gil_scoped_release release;
 
 #pragma omp parallel for schedule(guided)
     for (IndType i = 0; i < srows; i++)
@@ -107,7 +104,7 @@ SpMM(IndType srows, IndType scols, IndType nnz,
             }
     }
 
-    py::gil_scoped_acquire acquire;
+    pybind11::gil_scoped_acquire acquire;
 
     result.resize({srows, dcols});
 

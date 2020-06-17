@@ -10,12 +10,10 @@ if mtspy.cpp.has_eigen():
 else:
     eigen_backend = [False]
 
-print(eigen_backend)
-
 
 @pytest.mark.parametrize('dtype', dtype_list)
 @pytest.mark.parametrize('use_eigen', eigen_backend)
-def test_spmv(dtype, use_eigen):
+def test_sparse_vec_int32(dtype, use_eigen):
     N = 1000
     v0 = numpy.random.rand(N, 1).astype(dtype)
     M = sparse.random(N, N, density=0.1, format="csr", dtype=dtype)
@@ -26,18 +24,7 @@ def test_spmv(dtype, use_eigen):
 
 @pytest.mark.parametrize('dtype', dtype_list)
 @pytest.mark.parametrize('use_eigen', eigen_backend)
-def test_spmm(dtype, use_eigen):
-    N = 1000
-    v0 = numpy.ones((N, 10), dtype=dtype)
-    M = sparse.random(N, N, density=0.1, format="csr", dtype=dtype)
-    v1 = mtspy.matmat(M, v0, use_eigen)
-    v2 = M @ v0
-    assert(numpy.allclose(v1, v2))
-
-
-@pytest.mark.parametrize('dtype', dtype_list)
-@pytest.mark.parametrize('use_eigen', eigen_backend)
-def test_spmv_64bit_ind(dtype, use_eigen):
+def test_sparse_vec_int64(dtype, use_eigen):
     N = 1000
     v0 = numpy.random.rand(N, 1).astype(dtype)
     M = sparse.random(N, N, density=0.1, format="csr", dtype=dtype)
@@ -47,3 +34,25 @@ def test_spmv_64bit_ind(dtype, use_eigen):
     v1 = mtspy.matvec(M, v0, use_eigen)
     v2 = M @ v0
     assert(numpy.allclose(v1, v2))
+
+
+@pytest.mark.parametrize('dtype', dtype_list)
+@pytest.mark.parametrize('use_eigen', eigen_backend)
+def test_sparse_dense_int32(dtype, use_eigen):
+    N = 1000
+    v0 = numpy.ones((N, 10), dtype=dtype)
+    M = sparse.random(N, N, density=0.1, format="csr", dtype=dtype)
+    v1 = mtspy.matmat(M, v0, use_eigen)
+    v2 = M @ v0
+    assert(numpy.allclose(v1, v2))
+
+
+@pytest.mark.parametrize('dtype', dtype_list)
+def test_sparse_sparse_int32(dtype):
+    m, n, k = 500, 1000, 2000
+    A = sparse.random(m, k, density=0.1, format="csr")
+    B = sparse.random(k, n, density=0.1, format="csr")
+
+    C1 = mtspy.spmatmat(A, B, True)
+    C2 = A @ B
+    assert((C1 - C2).data.all())
