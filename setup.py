@@ -66,6 +66,6 @@ setup(
     ext_modules=[CMakeExtension('mtspy_cpp')],
     cmdclass=dict(build_ext=CMakeBuild),
     packages=find_packages(),
-    python_requires='>=3.7',
+    python_requires='>=3.6',
     zip_safe=False,
 )
