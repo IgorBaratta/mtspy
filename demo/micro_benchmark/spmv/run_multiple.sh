@@ -4,8 +4,9 @@ matrix_list=('vanHeukelum/cage15' 'Schenk/nlpkkt200' 'Fluorem/HV15R' 'Janna/Quee
 
 for matrix in "${matrix_list[@]}"
 do
-    for i in {1..24}
+    for i in {1..5}
     do
-        python3 spmv_benchmark.py "$matrix" --threads=$i
+        echo "Matrix $matrix, run number $i"
+        python3 spmv_single_benchmark.py "$matrix" --threads=12
     done
 done
