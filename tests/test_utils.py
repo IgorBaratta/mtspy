@@ -16,6 +16,10 @@ def test_donwload_matrix():
     assert(n == 1138)
     assert(nnz == 4054)
 
+    # Check if matrix market file already exists,
+    # reuse file if it is True
+    matrix = get_csr_matrix("HB/1138_bus")
+
 
 def test_callbacks():
     L = mtspy.aslinearoperator(identity(100))
@@ -32,14 +36,16 @@ def test_callbacks():
     assert(info == 0)
     assert(sum(residuals.residual - b).all() == 0)
 
+    assert (numpy.allclose(x1, x2))
 
-if __name__ == "__main__":
-    L = mtspy.aslinearoperator(identity(100))
-    b = numpy.ones(100)
 
-    itcount = IterationCallback()
-    residuals = ResidualCallback()
+# if __name__ == "__main__":
+#     L = mtspy.aslinearoperator(identity(100))
+#     b = numpy.ones(100)
 
-    x, info = cg(L, b, callback=residuals)
-    assert(info == 0)
-    assert(sum(residuals.residual - b).all() == 0)
+#     itcount = IterationCallback()
+#     residuals = ResidualCallback()
+
+#     x, info = cg(L, b, callback=residuals)
+#     assert(info == 0)
+#     assert(sum(residuals.residual - b).all() == 0)
