@@ -1,10 +1,11 @@
 import scipy.sparse as sp
+import scipy.sparse.linalg
 import numpy
 
 from mtspy.sparse_ops import matvec, matmat, spmatmat
 
 
-class LinearOperator(sp.linalg.LinearOperator):
+class LinearOperator(scipy.sparse.linalg.LinearOperator):
     def __init__(self, matrix: sp.csr_matrix):
         self.matrix = matrix
         super().__init__(shape=matrix.shape, dtype=matrix.dtype)
