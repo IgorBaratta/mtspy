@@ -7,3 +7,7 @@ _generate/
 *.so
 *.py[cod]
 *.egg-info
+*.tar.gz
+*.mtx
+*.csv*
+*.optrpt

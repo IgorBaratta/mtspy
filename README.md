@@ -15,8 +15,8 @@ Install with:
 pip3 install git+https://github.com/IgorBaratta/mtspy.git --upgrade
 ```
 
-or if the anot ll requirements are installed:
 
+To install mtspy along with the requirements, use:
 ```shell
 git clone --recursive https://github.com/IgorBaratta/mtspy.git
 cd mtspy
@@ -30,13 +30,19 @@ Make sure to clone with **--recursive** to download the required submodules!
 
 - Numpy
 - Scipy
+- C++ compiler with OpenMP 4.5 support (eg.: gcc>5) 
 - pybind11
-- C++ 17 compiler with OpenMP 4.5 support (eg. gcc>5) 
 
 Using docker container with all requirements installed:
 
 ```shell
 docker pull igorbaratta/mtspy:latest
+```
+
+
+### Tests
+```
+python3 -m pytest -v tests/
 ```
 
 ## License
