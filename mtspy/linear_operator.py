@@ -18,12 +18,15 @@ class LinearOperator(scipy.sparse.linalg.LinearOperator):
     def _matmat(self, X):
         if isinstance(X, LinearOperator):
             return spmatmat(self.matrix, X.matrix)
-        elif isinstance(X, sp.csr_matrix):
-            return spmatmat(self.matrix, X)
+        elif isinstance(X, sp.spmatrix):
+            return spmatmat(self.matrix, sp.csr_matrix(X))
         elif isinstance(X, numpy.ndarray):
             return matmat(self.matrix, X)
         else:
             raise TypeError("type not understood")
+
+    def __matmul__(self, other):
+        return self._matmat(other)
 
 
 def aslinearoperator(A):

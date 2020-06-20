@@ -4,10 +4,10 @@
 from scipy.sparse.linalg import LinearOperator, gmres, cg
 import numpy
 
-from mtspy.utils import get_matrix, IterationCallback
+from mtspy.utils import get_csr_matrix, IterationCallback
 import mtspy
 
-matrix = mtspy.utils.get_matrix("ACUSIM/Pres_Poisson")
+matrix = mtspy.utils.get_csr_matrix("ACUSIM/Pres_Poisson")
 
 
 A = mtspy.aslinearoperator(matrix)
