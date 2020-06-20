@@ -4,13 +4,15 @@ from scipy import sparse
 import pytest
 
 dtype_list = [numpy.float32, numpy.float64, numpy.complex64, numpy.complex128]
+matrix_type = ["csr", "csc"]
 
 
 @pytest.mark.parametrize('dtype', dtype_list)
-def test_linear_operator(dtype):
+@pytest.mark.parametrize('mtype', matrix_type)
+def test_linear_operator(dtype, mtype):
     N = 1000
     v0 = numpy.random.rand(N, 1).astype(dtype)
-    M = sparse.random(N, N, density=0.1, format="csr", dtype=dtype)
+    M = sparse.random(N, N, density=0.1, format=mtype, dtype=dtype)
 
     L = mtspy.aslinearoperator(M)
 
