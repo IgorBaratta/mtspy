@@ -5,6 +5,7 @@ WORKDIR /tmp
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -qq update && \
     apt-get -y install \
+    curl \
     cmake \
     g++ \
     libomp-dev\
