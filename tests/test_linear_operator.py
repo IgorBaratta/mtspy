@@ -17,17 +17,22 @@ def test_linear_operator(dtype, mtype):
     L = mtspy.aslinearoperator(M)
 
     v1 = L @ v0
-    v2 = M @ v0
+    v2 = L.matvec(v0)
+    v3 = M @ v0
     assert(numpy.allclose(v1, v2))
+    assert(numpy.allclose(v1, v3))
 
-    LL = L @ L
+    C = mtspy.aslinearoperator(L)
+
     MM = M @ M
-    assert((MM - LL).data.size == 0)
+    LC = L @ C
+    LM = L._matmat(M)
+
+    assert((MM - LC).data.size == 0)
+    assert((MM - LM).data.size == 0)
 
     B = numpy.random.rand(N, 100).astype(dtype)
-    LB = L @ B
-    MB = M @ B
-    assert(numpy.allclose(MB, LB))
+    assert(numpy.allclose(L @ B, M @ B))
 
 
 def test_linear_noktype():
