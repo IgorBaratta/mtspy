@@ -22,7 +22,7 @@ jobs:
       - name: Install mtspy
         run: python3 -m pip install -v .
       - name: Run unit tests
-        run: python3 -m pytest -v tests/ --cov=./ --cov-report=xml
+        run: python3 -m pytest -v tests/ --cov=mtspy/ --cov-report=xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
