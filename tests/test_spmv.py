@@ -72,3 +72,20 @@ def test_sparse_csc_vec_int32(recwarn, dtype, use_eigen):
     assert(numpy.allclose(v1, v2))
     assert len(recwarn) == 1
     assert recwarn.pop(sparse.SparseEfficiencyWarning)
+
+
+def test_sparse_ops_errors():
+    v0 = numpy.random.rand(10, 1)
+    M = sparse.random(5, 5, density=0.1, format="csr")
+    with pytest.raises(ValueError):
+        v1 = mtspy.matvec(M, v0)
+
+
+def test_complex_warning(recwarn):
+    M = sparse.random(5, 5, density=0.1, format="csr")
+    v0 = numpy.random.rand(M.shape[0], 1)
+    v0 = v0.astype(numpy.complex128)
+    v1 = mtspy.matvec(M, v0)
+    v2 = mtspy.matmat(M, v0)
+    assert len(recwarn) == 2
+    assert recwarn.pop(sparse.SparseEfficiencyWarning)
