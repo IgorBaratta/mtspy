@@ -11,8 +11,8 @@ from distutils.version import LooseVersion
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-if sys.version_info < (3, 7):
-    print("Python 3.7 or higher required, please upgrade.")
+if sys.version_info < (3, 6):
+    print("Python 3.6 or higher required, please upgrade.")
     sys.exit(1)
 
 
@@ -66,6 +66,6 @@ setup(
     ext_modules=[CMakeExtension('mtspy_cpp')],
     cmdclass=dict(build_ext=CMakeBuild),
     packages=find_packages(),
-    python_requires='>=3.7',
+    python_requires='>=3.6',
     zip_safe=False,
 )

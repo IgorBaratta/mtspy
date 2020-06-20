@@ -45,3 +45,19 @@ def get_matrix(Name: str, verbose: bool = True) -> csr_matrix:
         print("\t Done! \n")
 
     return A
+
+
+class IterationCallback:
+    nit = 0
+
+    def __call__(self, x):
+        self.nit += 1
+
+
+class ResidualCallback:
+    nit = 0
+    residual = []
+
+    def __call__(self, x):
+        self.nit += 1
+        self.residual.append(x)

@@ -34,20 +34,20 @@ endif()
 find_package(OpenMP REQUIRED)
 pybind11_add_module(mtspy_cpp mtspy/cpp/main.cpp)
 
-target_link_libraries(mtspy_cpp PUBLIC OpenMP::OpenMP_CXX)
+target_link_libraries(mtspy_cpp PRIVATE OpenMP::OpenMP_CXX)
+
+# Set compiler specific flags for intel compiler
+if(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+    message(STATUS "Setting Intel compiler specific flags")
+    set(FLAGS_INTEL_DEFAULT "-xAVX -m64 -parallel -qopenmp -qopt-report=2 -qopt-report-phase=vec -qopt-report=2 -qopt-report-phase=par")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAGS_INTEL_DEFAULT}")
+endif()
+
 
 # Find optional packages
 find_package(Eigen3 3.3.7 NO_MODULE)
 if (TARGET Eigen3::Eigen)
     add_definitions(-DUSE_EIGEN_BACKEND)
-    set(BLA_VENDOR Intel10_64lp)
-    find_package(LAPACK QUIET)
-    if (LAPACK_FOUND)
-        include_directories(${BLAS_INCLUDE_DIRS})
-        add_definitions(-DEIGEN_USE_MKL_ALL)
-        add_definitions(-DMKL_ILP64 -mkl=parallel)
-        target_link_libraries(mtspy_cpp PUBLIC iomp5 pthread m dl)
-        message("-- Using MKL as dense operations backend")
-    endif()
+    message(STATUS "Eigen backend is available.")
     target_link_libraries(mtspy_cpp PUBLIC Eigen3::Eigen)
 endif()

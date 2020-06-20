@@ -32,15 +32,16 @@ sparse_vec(IndType rows, IndType cols, IndType nnz, const array_t<ScalarType> &d
     // Temporarily  release global interpreter lock (GIL)
     pybind11::gil_scoped_release release;
 
-#pragma omp parallel for schedule(guided)
+    ScalarType result_i;
+#pragma omp parallel for schedule(guided) private(result_i)
     for (IndType i = 0; i < rows; i++)
     {
         const IndType local_size = displ_ptr[i + 1] - displ_ptr[i];
         const ScalarType *current_data = data_ptr + displ_ptr[i];
         const IndType *current_inds = indices_ptr + displ_ptr[i];
 
-        // FIXME: Provide custom reduction(+: result_i) for complex
-        ScalarType result_i = 0;
+        // FIXME: Consider custom reduction(+: result_i) for complex
+        result_i = 0;
 #pragma omp simd
         for (IndType j = 0; j < local_size; j++)
         {
