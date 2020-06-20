@@ -79,6 +79,7 @@ def test_sparse_ops_errors():
     M = sparse.random(5, 5, density=0.1, format="csr")
     with pytest.raises(ValueError):
         v1 = mtspy.matvec(M, v0)
+        v1 = mtspy.matmat(M, v0)
 
 
 def test_complex_warning(recwarn):
