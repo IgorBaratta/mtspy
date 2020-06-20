@@ -41,7 +41,7 @@ if __name__ == "__main__":
     assert(numpy.allclose(v1, v2))
 
     LL = L @ L
-    MM = M @ M
+    MM = M @ L
     assert((MM - LL).data.size == 0)
 
     B = numpy.random.rand(N, 100).astype(dtype)
