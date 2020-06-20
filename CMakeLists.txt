@@ -36,7 +36,7 @@ pybind11_add_module(mtspy_cpp mtspy/cpp/main.cpp)
 
 target_link_libraries(mtspy_cpp PRIVATE OpenMP::OpenMP_CXX)
 
-# Set compiler specific flags
+# Set compiler specific flags for intel compiler
 if(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     message(STATUS "Setting Intel compiler specific flags")
     set(FLAGS_INTEL_DEFAULT "-xAVX -m64 -parallel -qopenmp -qopt-report=2 -qopt-report-phase=vec -qopt-report=2 -qopt-report-phase=par")
