@@ -1,6 +1,7 @@
 import numpy
 from scipy import sparse
 import pytest
+import warnings
 
 import mtspy
 
@@ -57,3 +58,17 @@ def test_sparse_sparse_int32(dtype):
     C1 = mtspy.spmatmat(A, B, True)
     C2 = A @ B
     assert((C1 - C2).data.all())
+
+
+@pytest.mark.parametrize('dtype', dtype_list)
+@pytest.mark.parametrize('use_eigen', eigen_backend)
+def test_sparse_csc_vec_int32(recwarn, dtype, use_eigen):
+    warnings.simplefilter("always")
+    N = 100
+    v0 = numpy.random.rand(N, 1).astype(dtype)
+    M = sparse.random(N, N, density=0.1, format="csc", dtype=dtype)
+    v1 = mtspy.matvec(M, v0, use_eigen)
+    v2 = M @ v0
+    assert(numpy.allclose(v1, v2))
+    assert len(recwarn) == 1
+    assert recwarn.pop(sparse.SparseEfficiencyWarning)
