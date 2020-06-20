@@ -37,15 +37,3 @@ def test_callbacks():
     assert(sum(residuals.residual - b).all() == 0)
 
     assert (numpy.allclose(x1, x2))
-
-
-# if __name__ == "__main__":
-#     L = mtspy.aslinearoperator(identity(100))
-#     b = numpy.ones(100)
-
-#     itcount = IterationCallback()
-#     residuals = ResidualCallback()
-
-#     x, info = cg(L, b, callback=residuals)
-#     assert(info == 0)
-#     assert(sum(residuals.residual - b).all() == 0)
