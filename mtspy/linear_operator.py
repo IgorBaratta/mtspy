@@ -25,6 +25,9 @@ class LinearOperator(scipy.sparse.linalg.LinearOperator):
         else:
             raise TypeError("type not understood")
 
+    def __matmul__(self, other):
+        return self._matmat(other)
+
 
 def aslinearoperator(A):
     """
