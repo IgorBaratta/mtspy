@@ -9,8 +9,6 @@ jobs:
     steps:
       - name: git Actions
         uses: srt32/git-actions@v0.0.3
-      - name: Setup file system permissions
-        run: chmod -R 777 $GITHUB_WORKSPACE /github /__w/_temp
       - uses: actions/checkout@v2
         with:
           submodules: recursive         
