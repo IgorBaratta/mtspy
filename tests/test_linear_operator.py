@@ -35,33 +35,16 @@ def test_linear_operator(dtype, mtype):
     assert(numpy.allclose(L @ B, M @ B))
 
 
+@pytest.mark.xfail()
 def test_linear_noktype():
     N = 1000
     dense = numpy.ones((N, N))
-    try:
-        L = mtspy.aslinearoperator(dense)
-    except TypeError as err:
-        assert (err == TypeError)
+    C = sparse.linalg.aslinearoperator(dense)
+    L = mtspy.aslinearoperator(C)
 
 
 if __name__ == "__main__":
     N = 1000
-    dtype = numpy.float64
-    v0 = numpy.random.rand(N, 1).astype(dtype)
-    M = sparse.random(N, N, density=0.1, format="csr", dtype=dtype)
-
-    L = mtspy.aslinearoperator(M)
-
-    v1 = L @ v0
-    v2 = M @ v0
-    assert(numpy.allclose(v1, v2))
-
-    LL = L @ L
-    MM = M @ L
-    assert((MM - LL).data.size == 0)
-
-    B = numpy.random.rand(N, 100).astype(dtype)
-    LB = L @ B
-    MB = M @ B
-
-    assert(numpy.allclose(MB, LB))
+    dense = numpy.ones((N, N))
+    C = sparse.linalg.aslinearoperator(dense)
+    L = mtspy.aslinearoperator(dense)
