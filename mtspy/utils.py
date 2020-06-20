@@ -5,7 +5,7 @@ from scipy.io import mmread
 from scipy.sparse import csr_matrix
 
 
-def get_matrix(Name: str, verbose: bool = True) -> csr_matrix:
+def get_csr_matrix(Name: str, verbose: bool = True) -> csr_matrix:
     """
     Get matrix from the SuiteSparse Matrix Collection website and
     convert to the scipy.csr format.

@@ -3,7 +3,7 @@ import numpy
 import sys
 
 from mtspy import thread_control, matmat
-from mtspy.utils import get_matrix
+from mtspy.utils import get_csr_matrix
 
 parser = argparse.ArgumentParser()
 parser.add_argument("name", help="Matrix name from SuiteSparse Collection, eg: HB/west0479", type=str)
@@ -13,7 +13,7 @@ parser.add_argument("--verbose", default=0, help="Use verbose mode", type=int)
 args = parser.parse_args()
 
 thread_control.set_num_threads(args.threads)
-A = get_matrix(args.name, args.verbose)
+A = get_csr_matrix(args.name, args.verbose)
 m, n = A.shape
 x = numpy.ones((n, args.ncols), A.dtype)
 

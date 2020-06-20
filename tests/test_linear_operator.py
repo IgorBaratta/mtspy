@@ -41,10 +41,3 @@ def test_linear_noktype():
     dense = numpy.ones((N, N))
     C = sparse.linalg.aslinearoperator(dense)
     L = mtspy.aslinearoperator(C)
-
-
-if __name__ == "__main__":
-    N = 1000
-    dense = numpy.ones((N, N))
-    C = sparse.linalg.aslinearoperator(dense)
-    L = mtspy.aslinearoperator(dense)
