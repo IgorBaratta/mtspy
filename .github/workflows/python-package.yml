@@ -15,12 +15,12 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          pip install flake8 pytest
+          pip install flake8 pytest pytest-cov
           if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
       - name: Verify pep8, pyflakes and circular complexity
         run: flake8 mtspy
       - name: Install mtspy
         run: python3 -m pip install -v .
       - name: Run unit tests
-        run: python3 -m pytest -v tests/
-    
+        run: python3 -m pytest -v tests/ --cov mtspy
+
