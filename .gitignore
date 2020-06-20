@@ -10,3 +10,4 @@ _generate/
 *.tar.gz
 *.mtx
 *.csv*
+*.optrpt
