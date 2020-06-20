@@ -25,4 +25,3 @@ jobs:
         run: python3 -m pytest -v tests/ --cov mtspy
       - name: Submit to codecov
         run: bash <(curl -s https://codecov.io/bash)
-
