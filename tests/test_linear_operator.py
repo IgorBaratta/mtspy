@@ -30,6 +30,15 @@ def test_linear_operator(dtype, mtype):
     assert(numpy.allclose(MB, LB))
 
 
+def test_linear_noktype():
+    N = 1000
+    dense = numpy.ones((N, N))
+    try:
+        L = mtspy.aslinearoperator(dense)
+    except TypeError as err:
+        assert (err == TypeError)
+
+
 if __name__ == "__main__":
     N = 1000
     dtype = numpy.float64
