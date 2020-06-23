@@ -63,11 +63,11 @@ namespace mtspy
         }
     };
 
-    /// Simple sparsity pattern sctructure used for
-    /// structured binding in C++ 17
-    template <typename IndType>
-    struct sparsity_pattern
+    /// Simple csr data sctructure used for structured binding in C++ 17
+    template <typename ScalarType, typename IndType>
+    struct csr_data
     {
+        std::vector<ScalarType> data;
         std::vector<IndType> indptr;
         std::vector<IndType> indices;
     };

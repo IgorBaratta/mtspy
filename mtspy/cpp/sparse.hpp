@@ -60,6 +60,7 @@ sparse_vec(IndType rows, IndType cols, IndType nnz, const array_t<ScalarType> &d
     return result;
 }
 
+//===============================================================================================================
 template <typename ScalarType, typename IndType>
 array_t<ScalarType>
 sparse_dense(IndType srows, IndType scols, IndType nnz, const array_t<ScalarType> &data,
@@ -115,45 +116,35 @@ sparse_dense(IndType srows, IndType scols, IndType nnz, const array_t<ScalarType
     return result;
 }
 
+//===============================================================================================================
 // Gustavson’s algorithm [17]
 template <typename ScalarType, typename IndType>
 std::tuple<array_t<ScalarType>, array_t<IndType>, array_t<IndType>>
-sparse_sparse(IndType m, array_t<ScalarType> &A_data,
-              array_t<IndType> &A_displ,
-              array_t<IndType> &A_indices,
-              array_t<ScalarType> &B_data,
-              array_t<IndType> &B_displ,
-              array_t<IndType> &B_indices)
+sparse_sparse_tf(IndType m, IndType n, IndType k,
+                 array_t<ScalarType> &A_data,
+                 array_t<IndType> &A_displ,
+                 array_t<IndType> &A_indices,
+                 array_t<ScalarType> &B_data,
+                 array_t<IndType> &B_displ,
+                 array_t<IndType> &B_indices)
 
 {
     // Wrap A-data into a mtspy::csr_matrix
     auto A = mtspy::csr_matrix<ScalarType, IndType>(A_data.mutable_data(), A_displ.mutable_data(),
-                                                    A_indices.mutable_data(), {m, m});
-
+                                                    A_indices.mutable_data(), {m, k});
     // Wrap B-data into a csr_matrix
     auto B = mtspy::csr_matrix<ScalarType, IndType>(B_data.mutable_data(), B_displ.mutable_data(),
-                                                    B_indices.mutable_data(), {m, m});
+                                                    B_indices.mutable_data(), {k, n});
 
     // Temporarily  release global interpreter lock (GIL)
     pybind11::gil_scoped_release release;
 
     // Phase 1 -  symbolic phase - compute sparsity pattern
-    auto [indptr, indices] = sparse_sparse_pattern(A, B);
+    auto [data, indptr, indices] = sparse_sparse_two_phases(A, B, false);
+
     pybind11::gil_scoped_acquire acquire;
 
-    // Allocate data for output matrix
-    array_t<ScalarType> pydata(indptr.back());
-
-    // Wrap B-data into a csr_matrix
-    auto C = mtspy::csr_matrix<ScalarType, IndType>(pydata.mutable_data(), indptr.data(),
-                                                    indices.data(), {m, m});
-
-    // Phase 2 -  Numerical phase - compute output data for a output
-    // matrix C with pre-computed sparsity pattern
-    // C = A * B
-    sparse_sparse_product<ScalarType, IndType>(A, B, C);
-
-    // TODO: create function to pefrome this operation
+    // TODO: create function to perform this operation
     // move indptr to numpy array
     auto v = new std::vector<IndType>(indptr);
     auto capsule = pybind11::capsule(v, [](void *v) { delete reinterpret_cast<std::vector<IndType> *>(v); });
@@ -164,5 +155,49 @@ sparse_sparse(IndType m, array_t<ScalarType> &A_data,
     auto capsule1 = pybind11::capsule(v1, [](void *v1) { delete reinterpret_cast<std::vector<IndType> *>(v1); });
     auto pyindices = pybind11::array(v1->size(), v1->data(), capsule1);
 
+    // move indidces to numpy array
+    auto v2 = new std::vector<ScalarType>(data);
+    auto capsule2 = pybind11::capsule(v2, [](void *v2) { delete reinterpret_cast<std::vector<IndType> *>(v2); });
+    auto pydata = pybind11::array(v2->size(), v2->data(), capsule2);
+
     return {pydata, pyindptr, pyindices};
+}
+
+//===============================================================================================================
+
+// Gustavson’s algorithm [17]
+template <typename ScalarType, typename IndType>
+void sparse_sparse(IndType m, IndType n, IndType k,
+                   array_t<ScalarType> &A_data,
+                   array_t<IndType> &A_displ,
+                   array_t<IndType> &A_indices,
+                   array_t<ScalarType> &B_data,
+                   array_t<IndType> &B_displ,
+                   array_t<IndType> &B_indices,
+                   array_t<ScalarType> &C_data,
+                   array_t<IndType> &C_displ,
+                   array_t<IndType> &C_indices)
+{
+
+    // Wrap A-data into a mtspy::csr_matrix
+    auto A = mtspy::csr_matrix<ScalarType, IndType>(A_data.mutable_data(), A_displ.mutable_data(),
+                                                    A_indices.mutable_data(), {m, k});
+
+    // Wrap B-data into a csr_matrix
+    auto B = mtspy::csr_matrix<ScalarType, IndType>(B_data.mutable_data(), B_displ.mutable_data(),
+                                                    B_indices.mutable_data(), {k, n});
+
+    // Wrap C-data into a csr_matrix
+    auto C = mtspy::csr_matrix<ScalarType, IndType>(C_data.mutable_data(), C_displ.mutable_data(),
+                                                    C_indices.mutable_data(), {m, n});
+
+    // Temporarily  release global interpreter lock (GIL)
+    pybind11::gil_scoped_release release;
+
+    // Perofm numerical phase - compute output data for output
+    // matrix C with pre-computed sparsity pattern
+    // C = A * B
+    sparse_sparse_numeric<ScalarType, IndType>(A, B, C);
+
+    pybind11::gil_scoped_acquire acquire;
 }

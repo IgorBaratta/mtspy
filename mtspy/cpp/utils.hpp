@@ -1,7 +1,10 @@
 #pragma once
 
-#include "robin_hood.h"
 #include "thread_control.hpp"
+#include "tsl/robin_growth_policy.h"
+#include "tsl/robin_map.h"
+#include "tsl/robin_set.h"
+#include <functional>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <type_traits>
@@ -27,19 +30,34 @@ namespace mtspy::utils
     }
 
     //====================================================================================//
-    template <typename T>
-    using hash_table = std::vector<robin_hood::unordered_set<T>>;
+    template <typename Key>
+    using hash_set = std::vector<tsl::robin_set<Key, std::hash<Key>,
+                                                std::equal_to<Key>,
+                                                std::allocator<Key>,
+                                                false>>;
+
+    template <typename Key, typename T>
+    // using hash_map = std::vector<tsl::hopscotch_map<Key, T>>;
+    // using hash_map = std::vector<tsl::robin_map<Key, T>>;
+    using hash_map = std::vector<tsl::robin_map<Key, T,
+                                                std::hash<Key>,
+                                                std::equal_to<Key>,
+                                                std::allocator<std::pair<Key, T>>,
+                                                true>>;
 
     //====================================================================================//
     template <typename IndType>
-    hash_table<IndType> make_table(IndType conservative_nnz)
+    hash_set<IndType> make_table(IndType conservative_nnz)
     {
         int nthreads = mtspy::threads::get_max_threads();
-        hash_table<IndType> table(nthreads);
+        hash_set<IndType> table(nthreads);
 
 #pragma omp parallel for schedule(static)
         for (int i = 0; i < nthreads; i++)
+        {
             table[i].rehash(conservative_nnz);
+            table[i].reserve(conservative_nnz);
+        }
 
         return table;
     }
@@ -69,5 +87,20 @@ namespace mtspy::utils
         return flattened_output;
     }
     //====================================================================================//
+
+    /// Precompute hashes of stored indices of columns B
+    template <typename ScalarType, typename IndType>
+    std::vector<size_t> precompute_hashes(mtspy::csr_matrix<ScalarType, IndType> &B)
+    {
+        // precompute hashes of columns of B
+        std::vector<size_t> precomputed_hashes(B.nnz());
+        const IndType *indices = B.indices();
+
+#pragma omp for schedule(static)
+        for (IndType i = 0; i < B.nnz(); i++)
+            precomputed_hashes[i] = std::hash<IndType>()(indices[i]);
+
+        return precomputed_hashes;
+    }
 
 } // namespace mtspy::utils

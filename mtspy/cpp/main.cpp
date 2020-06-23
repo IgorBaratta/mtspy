@@ -33,6 +33,20 @@ PYBIND11_MODULE(mtspy_cpp, m)
     m.def("sparse_dense", &sparse_dense<std::complex<double>, std::int64_t>, py::return_value_policy::move);
 
     //====================================================================================//
+    // Two Phases - Symbolic phase + Numeric phase
+    // Sparse Matrix - Sparse Matrix Product (32 bit indices)
+    m.def("sparse_sparse_tf", &sparse_sparse_tf<float, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_sparse_tf", &sparse_sparse_tf<double, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_sparse_tf", &sparse_sparse_tf<std::complex<float>, std::int32_t>, py::return_value_policy::move);
+    m.def("sparse_sparse_tf", &sparse_sparse_tf<std::complex<double>, std::int32_t>, py::return_value_policy::move);
+    // Sparse Matrix - Sparse Matrix Product (64 bit indices)
+    m.def("sparse_sparse_tf", &sparse_sparse_tf<float, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_sparse_tf", &sparse_sparse_tf<double, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_sparse_tf", &sparse_sparse_tf<std::complex<float>, std::int64_t>, py::return_value_policy::move);
+    m.def("sparse_sparse_tf", &sparse_sparse_tf<std::complex<double>, std::int64_t>, py::return_value_policy::move);
+
+    //====================================================================================//
+    // Only numeric phase
     // Sparse Matrix - Sparse Matrix Product (32 bit indices)
     m.def("sparse_sparse", &sparse_sparse<float, std::int32_t>);
     m.def("sparse_sparse", &sparse_sparse<double, std::int32_t>);
